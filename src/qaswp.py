@@ -30,6 +30,47 @@ class QASWPSession:
         # entanglement-ish deterministic seed derived after handshake
         self._entangle_id = None
 
+    def _empty_packet(self):
+        return {
+            "nonce": b"",
+            "encrypted_payload": b"",
+            "wire_len": 0,
+            "flushed": False,
+        }
+
+    def _emit_batch_packet(self, nonce=None):
+        if not self.session_key:
+            raise ConnectionError("Session not established.")
+        if self._confirm_count == 0:
+            return self._empty_packet()
+
+        seq = self._seq
+        count = self._confirm_count
+        bits = self._confirm_bits
+        payload = {"t": "batch", "seq": seq, "count": count, "bits": bits}
+        pt = json.dumps(payload, separators=(",", ":")).encode()
+
+        if nonce is None:
+            nonce = secrets.token_bytes(12)
+        aesgcm = AESGCM(self.session_key)
+        encrypted_payload = aesgcm.encrypt(nonce, pt, None)
+        wire_len = len(nonce) + len(encrypted_payload)
+
+        self._seq += count
+        self._confirm_bits = 0
+        self._confirm_count = 0
+
+        return {
+            "nonce": nonce,
+            "encrypted_payload": encrypted_payload,
+            "wire_len": wire_len,
+            "flushed": True,
+        }
+
+    def flush_confirmations(self):
+        """Flush any buffered confirmation bits as an encrypted batch."""
+        return self._emit_batch_packet()
+
     def _update_transcript(self, data):
         self.transcript += data
 
@@ -124,58 +165,18 @@ class QASWPSession:
             self._confirm_count += 1
             # flush only when batch fills
             if self._confirm_count < self._batch_size:
-                return {
-                    "nonce": b"",
-                    "encrypted_payload": b"",
-                    "wire_len": 0,
-                    "flushed": False,
-                }
-            # flush batch
-            payload = {
-                "t": "batch",
-                "seq": self._seq,
-                "count": self._confirm_count,
-                "bits": self._confirm_bits,
-            }
-            pt = json.dumps(payload, separators=(",", ":")).encode()
-            encrypted_payload = aesgcm.encrypt(nonce, pt, None)
-            wire_len = len(nonce) + len(encrypted_payload)
-            # reset counters
-            self._seq += self._confirm_count
-            self._confirm_bits = 0
-            self._confirm_count = 0
-            return {
-                "nonce": nonce,
-                "encrypted_payload": encrypted_payload,
-                "wire_len": wire_len,
-                "flushed": True,
-            }
+                return self._empty_packet()
+            # flush batch when we hit the batch size threshold
+            return self._emit_batch_packet(nonce)
         else:
             # mismatch → flush any pending confirmations first, then send corrective
             packets = []
             total_len = 0
             if self._confirm_count > 0:
-                payload = {
-                    "t": "batch",
-                    "seq": self._seq,
-                    "count": self._confirm_count,
-                    "bits": self._confirm_bits,
-                }
-                pt = json.dumps(payload, separators=(",", ":")).encode()
-                enc = aesgcm.encrypt(nonce, pt, None)
-                plen = len(nonce) + len(enc)
-                packets.append(
-                    {
-                        "nonce": nonce,
-                        "encrypted_payload": enc,
-                        "wire_len": plen,
-                        "flushed": True,
-                    }
-                )
-                total_len += plen
-                self._seq += self._confirm_count
-                self._confirm_bits = 0
-                self._confirm_count = 0
+                batch_packet = self.flush_confirmations()
+                if batch_packet["flushed"]:
+                    total_len += batch_packet["wire_len"]
+                    packets.append(batch_packet)
                 nonce = secrets.token_bytes(12)
             # send corrective delta
             payload = {"t": "delta", "seq": self._seq, "need": actual_id}
