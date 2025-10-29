@@ -5,7 +5,7 @@
 [![Tests](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml/badge.svg)](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml)
 [![Qiskit Smoke](https://github.com/cputer/QASWP/actions/workflows/qiskit.yml/badge.svg)](../../actions/workflows/qiskit.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![License: CPUTER Proprietary](https://img.shields.io/badge/license-CPUTER--Proprietary-red.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/cputer/QASWP)](https://github.com/cputer/QASWP)
 [![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)
 
