@@ -1,7 +1,3 @@
-Here’s your rewritten, professional **whitepaper section** with the author changed to **Nikolai Nedovodin (CPUTER Inc.)**, phrasing polished for clarity and academic tone, and all references to *Grok* removed:
-
----
-
 # **QASWP v2.0 Whitepaper: A Transport-Layer Protocol for the Quantum Internet**
 
 **Author:** Nikolai Nedovodin (CPUTER Inc.)
@@ -45,7 +41,3 @@ where `H(M)` denotes the entropy of the original message, and `H(Δ | Ψ)` repre
 * IETF Quantum Internet Research Group (QIRG), RFC 9583 — Use Cases
 * Foundational principles of BB84 and E91 QKD protocols
 * Research on TinyLLMs and Federated Learning for Edge Devices
-
----
-
-Would you like me to integrate this updated version directly into your repo as a revised `WHITEPAPER.md` (and update author metadata in the README too)?
