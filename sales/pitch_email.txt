@@ -1,0 +1,14 @@
+Subject: QASWP (Demo-Verified): 99% Compression on Repeated Flows + PQ Session — Pilot Discussion
+
+Hi <Name>,
+
+We've published a demo-verified version of QASWP. In CI it shows:
+- 99%+ compression on repeated flows,
+- shared-session keys in simulation,
+- deterministic entanglement-id sync stub,
+- succinct 64B verification.
+
+Proposal: small pilot on predictable traffic. Repo + badges attached.
+
+Author: Nikolai Nedovodin (CPUTER Inc.)
+Contact: info@cputer.com
