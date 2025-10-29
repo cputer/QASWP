@@ -2,7 +2,7 @@
 
 [![Benchmarks](https://github.com/cputer/QASWP/actions/workflows/benchmarks.yml/badge.svg)](../../actions/workflows/benchmarks.yml)
 [![Fuzz](https://github.com/cputer/QASWP/actions/workflows/fuzz.yml/badge.svg)](../../actions/workflows/fuzz.yml)
-[![Tests](https://github.com/cputer/QASWP/actions/workflows/test-claims.yml/badge.svg)](https://github.com/cputer/QASWP/actions/workflows/test-claims.yml)
+[![Tests](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml/badge.svg)](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml)
 [![Qiskit Smoke](https://github.com/cputer/QASWP/actions/workflows/qiskit.yml/badge.svg)](../../actions/workflows/qiskit.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
