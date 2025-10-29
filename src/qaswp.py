@@ -3,6 +3,7 @@ import hmac
 import json
 import secrets
 
+from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
@@ -233,11 +234,27 @@ class QASWPSession:
         if wire_len == 0 or flushed is False:
             return None
 
-        if not packet.get("nonce") or not packet.get("encrypted_payload"):
+        nonce = packet.get("nonce")
+        payload = packet.get("encrypted_payload")
+
+        # Reject placeholders or malformed payloads before attempting to decrypt.
+        if not nonce or not payload:
             return None
 
+        if not isinstance(nonce, (bytes, bytearray, memoryview)):
+            return None
+        if not isinstance(payload, (bytes, bytearray, memoryview)):
+            return None
+
+        nonce = bytes(nonce)
+        payload = bytes(payload)
+
         aesgcm = AESGCM(self.session_key)
-        decrypted_payload = aesgcm.decrypt(packet["nonce"], packet["encrypted_payload"], None)
+        try:
+            decrypted_payload = aesgcm.decrypt(nonce, payload, None)
+        except (InvalidTag, ValueError):
+            # Treat unverifiable or malformed ciphertexts as drop/no-op events.
+            return None
         return json.loads(decrypted_payload.decode())
 
     # DEMO "zk-like" succinct commitment (not a SNARK; size-limited)
