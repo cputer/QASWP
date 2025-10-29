@@ -124,3 +124,13 @@ Open in VS Code → Command Palette → “Dev Containers: Open Folder in Contai
 ## 📦 Releasing
 - Release notes drafted automatically by **Release Drafter**.
 - Bump version in `CHANGELOG.md` and tag: `git tag v2.3 && git push --tags`.
+
+### Qiskit-backed QKD (v2.2.0 scaffold)
+
+A Qiskit handshake scaffold is provided behind a feature flag:
+
+- Enable with `QASWP_QISKIT=1`.
+- Run the local smoke test: `QASWP_QISKIT=1 pytest -q tests/test_qiskit_stub.py`.
+- CI workflow: **Qiskit Smoke** (manual trigger) installs Qiskit best-effort and runs the smoke test, which skips gracefully if Qiskit is unavailable.
+
+> Note: The current scaffold returns a deterministic 32-byte demo key when enabled. In v2.2.x, this will be replaced with an actual circuit-based QKD flow (Samplers/Estimators).
