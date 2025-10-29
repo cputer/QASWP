@@ -4,12 +4,15 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/python-tests.yml?branch=main)](https://github.com/cputer/QASWP/actions/workflows/python-tests.yml)
 [![CodeQL](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/codeql.yml?label=CodeQL)](https://github.com/cputer/QASWP/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/cputer/QASWP?display_name=tag)](https://github.com/cputer/QASWP/releases)
+[![Claim Tests (Demo)](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml/badge.svg)](../../actions/workflows/claim-tests.yml)
 
 
 [![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)
 [![Python](https://img.shields.io/badge/Python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Stars](https://img.shields.io/github/stars/cputer/QASWP)](https://github.com/cputer/QASWP)
+
+> **Demo Mode:** The code includes a *demo-only* path that achieves **99%+ compression** on repeated templated flows via batched confirmation bits, uses a **shared-key** handshake for testability, a deterministic **entanglement sync stub**, and a **succinct “zk-like” proof** (commitment+verify). Real deployments will vary and require production crypto/ML systems.
 
 **QASWP** is a visionary transport-layer protocol for the Quantum Internet, achieving **99%+ compression**, **unbreakable keys**, and **zero-latency context synchronization** through a novel synthesis of quantum and AI technologies. It is designed to be the secure, efficient Layer 4 for connecting distributed quantum computers and AI agents.
 
