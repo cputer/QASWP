@@ -1,5 +1,6 @@
 import time
 
+
 def run_server():
     print("🌌 [QASWP Server] Awaiting connections...")
     # In a real server, this would be a loop listening on a socket.
@@ -8,6 +9,7 @@ def run_server():
     while True:
         print("...listening...")
         time.sleep(10)
+
 
 if __name__ == "__main__":
     run_server()

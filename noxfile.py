@@ -1,5 +1,6 @@
 import nox
 
+
 @nox.session(python=["3.10", "3.11"])  # type: ignore
 def tests(session):
     session.install("-r", "requirements.txt")
