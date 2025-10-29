@@ -1,4 +1,5 @@
-from src.qaswp import QASWPSession, VOCAB
+from src.qaswp import VOCAB, QASWPSession
+
 
 def test_demo_repeated_templates_compress_over_95pct():
     cli = QASWPSession(is_client=True)
@@ -20,7 +21,10 @@ def test_demo_repeated_templates_compress_over_95pct():
         pkt = cli.weave_packet([VOCAB["GET"], VOCAB["/api/v1/data"]])
         wire_total += pkt["wire_len"]
     ratio = (1 - (wire_total / plain_total)) * 100.0
-    print(f"Demo repeated-template compression: {ratio:.2f}% (wire={wire_total}, plain={plain_total})")
+    print(
+        "Demo repeated-template compression: "
+        f"{ratio:.2f}% (wire={wire_total}, plain={plain_total})"
+    )
     assert ratio >= 95.0
 
 

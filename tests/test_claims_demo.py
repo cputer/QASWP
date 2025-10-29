@@ -1,6 +1,4 @@
-import pytest
-
-from src.qaswp import QASWPSession, VOCAB
+from src.qaswp import VOCAB, QASWPSession
 
 
 def do_handshake():

@@ -1,4 +1,4 @@
-from src.qaswp import QASWPSession, VOCAB
+from src.qaswp import QASWPSession
 
 
 def test_entanglement_stub_is_identical_on_both_ends():

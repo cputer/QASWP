@@ -12,10 +12,11 @@ target-version = ["py311"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-select = ["E", "F", "I", "B"]
-ignore = ["E203", "W503"]
 exclude = ["site", "build", "dist", ".venv", "venv"]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+extend-select = ["E", "F", "I", "B"]
+ignore = ["E203"]
+
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
-profile = "black"

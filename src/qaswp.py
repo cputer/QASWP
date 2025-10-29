@@ -1,21 +1,27 @@
-from .qkd import bb84_keygen
-from .neural import TinyLLM, VOCAB
-from .zk_sim import generate_zk_proof
-import secrets
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-import hmac
 import hashlib
+import hmac
 import json
+import secrets
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+from .neural import VOCAB, TinyLLM
+from .qkd import bb84_keygen
+from .zk_sim import generate_zk_proof
+
+__all__ = ["QASWPSession", "VOCAB"]
+
 
 class QASWPSession:
     """Core QASWP protocol logic simulation."""
+
     def __init__(self, is_client=False):
         self.is_client = is_client
         self.model = TinyLLM()
         self.session_key = None
-        self.transcript = b''
+        self.transcript = b""
         # demo-mode semantic confirmation batching
         self._confirm_bits = 0
         self._confirm_count = 0
@@ -31,18 +37,25 @@ class QASWPSession:
         """Client initiates the handshake."""
         # In a real PQC implementation, we'd use Kyber.
         # Here we simulate the ephemeral key as a random string.
-        ephemeral_pub_key = secrets.token_bytes(32) 
+        ephemeral_pub_key = secrets.token_bytes(32)
         qrng_nonce = secrets.token_bytes(32)
         model_hash = self.model.get_model_diff_hash()
-        
+
         hello_packet = ephemeral_pub_key + qrng_nonce + model_hash
         self._update_transcript(hello_packet)
-        return {"ephemeral_pub_key": ephemeral_pub_key, "nonce": qrng_nonce, "model_hash": model_hash}
+        return {
+            "ephemeral_pub_key": ephemeral_pub_key,
+            "nonce": qrng_nonce,
+            "model_hash": model_hash,
+        }
 
     def server_pass_2(self, client_hello):
         """Server responds with QKD-based authentication."""
-        self._update_transcript(client_hello["ephemeral_pub_key"] + client_hello["nonce"] + client_hello["model_hash"])
-        
+        transcript_piece = (
+            client_hello["ephemeral_pub_key"] + client_hello["nonce"] + client_hello["model_hash"]
+        )
+        self._update_transcript(transcript_piece)
+
         try:
             # The quantum master key is derived from the QKD session
             qkd_master_key = bb84_keygen()
@@ -77,7 +90,11 @@ class QASWPSession:
         finish_proof = generate_zk_proof("client_private_state", self.transcript)
         # derive same entangle id stub
         self._entangle_id = hashlib.sha256(b"entangle|" + self.session_key).hexdigest()[:16]
-        return {"status": "ok", "finish_proof": finish_proof, "entanglement_id": self._entangle_id}
+        return {
+            "status": "ok",
+            "finish_proof": finish_proof,
+            "entanglement_id": self._entangle_id,
+        }
 
     def weave_packet(self, data_tokens):
         """Creates a neural-semantic packet with batched confirmations.
@@ -91,7 +108,8 @@ class QASWPSession:
             raise ConnectionError("Session not established.")
 
         # predict next token id given history (last token is "true" next)
-        prediction_id = self.model.predict_next_token(data_tokens[:-1] if len(data_tokens) > 1 else data_tokens)
+        history = data_tokens[:-1] if len(data_tokens) > 1 else data_tokens
+        prediction_id = self.model.predict_next_token(history)
         actual_id = data_tokens[-1] if len(data_tokens) else prediction_id
         # DEMO: treat templated flows as perfectly predicted to highlight batching compression
         prediction_id = actual_id
@@ -106,7 +124,12 @@ class QASWPSession:
             self._confirm_count += 1
             # flush only when batch fills
             if self._confirm_count < self._batch_size:
-                return {"nonce": b"", "encrypted_payload": b"", "wire_len": 0, "flushed": False}
+                return {
+                    "nonce": b"",
+                    "encrypted_payload": b"",
+                    "wire_len": 0,
+                    "flushed": False,
+                }
             # flush batch
             payload = {
                 "t": "batch",
@@ -121,17 +144,34 @@ class QASWPSession:
             self._seq += self._confirm_count
             self._confirm_bits = 0
             self._confirm_count = 0
-            return {"nonce": nonce, "encrypted_payload": encrypted_payload, "wire_len": wire_len, "flushed": True}
+            return {
+                "nonce": nonce,
+                "encrypted_payload": encrypted_payload,
+                "wire_len": wire_len,
+                "flushed": True,
+            }
         else:
             # mismatch → flush any pending confirmations first, then send corrective
             packets = []
             total_len = 0
             if self._confirm_count > 0:
-                payload = {"t": "batch", "seq": self._seq, "count": self._confirm_count, "bits": self._confirm_bits}
+                payload = {
+                    "t": "batch",
+                    "seq": self._seq,
+                    "count": self._confirm_count,
+                    "bits": self._confirm_bits,
+                }
                 pt = json.dumps(payload, separators=(",", ":")).encode()
                 enc = aesgcm.encrypt(nonce, pt, None)
                 plen = len(nonce) + len(enc)
-                packets.append({"nonce": nonce, "encrypted_payload": enc, "wire_len": plen, "flushed": True})
+                packets.append(
+                    {
+                        "nonce": nonce,
+                        "encrypted_payload": enc,
+                        "wire_len": plen,
+                        "flushed": True,
+                    }
+                )
                 total_len += plen
                 self._seq += self._confirm_count
                 self._confirm_bits = 0
@@ -143,7 +183,14 @@ class QASWPSession:
             enc = aesgcm.encrypt(nonce, pt, None)
             plen = len(nonce) + len(enc)
             total_len += plen
-            packets.append({"nonce": nonce, "encrypted_payload": enc, "wire_len": plen, "flushed": True})
+            packets.append(
+                {
+                    "nonce": nonce,
+                    "encrypted_payload": enc,
+                    "wire_len": plen,
+                    "flushed": True,
+                }
+            )
             self._seq += 1
             result = packets[-1]
             result["wire_len"] = total_len
@@ -157,7 +204,7 @@ class QASWPSession:
         """Decrypts and processes a woven packet."""
         if not self.session_key:
             raise ConnectionError("Session not established.")
-        
+
         aesgcm = AESGCM(self.session_key)
         decrypted_payload = aesgcm.decrypt(packet["nonce"], packet["encrypted_payload"], None)
         return json.loads(decrypted_payload.decode())
