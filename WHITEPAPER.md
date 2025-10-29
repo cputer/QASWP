@@ -267,6 +267,25 @@ To give a flavor, here’s an example of what a SNARK circuit in QASWP might rep
 
 This is highly complex for large networks, but could be simplified for smaller calibration networks or an agreed simplified verification model.
 
+---
+
+## Theoretical Boundary and Compliance with Shannon Entropy
+
+Although QASWP demonstrates compression ratios approaching 99 % in deterministic demo scenarios,
+this does not imply a violation of the Shannon entropy limit for lossless coding.
+The apparent gain arises from **semantic context prediction** and **shared model state**,
+which reduce effective entropy by conditioning on known context Ψ.
+
+\[
+\text{Effective compression} = 1 - \frac{H(Δ \mid Ψ)}{H(M)}
+\]
+
+When \( H(Δ \mid Ψ) \rightarrow 0 \), the apparent compression approaches 100 %, but
+the protocol remains information-theoretically sound — no information is created or destroyed,
+and total entropy remains consistent with Shannon’s limit.
+
+---
+
 ## Performance Analysis
 
 We now examine the performance characteristics of QASWP in terms of communication overhead, computational cost, and security gain, based on theoretical analysis and preliminary experiments.
