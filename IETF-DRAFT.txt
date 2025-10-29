@@ -1,841 +1,1112 @@
-Internet-Draft              QASWP Specification            N.
-NedovodinIntended status: Experimental                      CPUTER
-Inc.Expires: April 30, 2026                       October 30, 2025
-Quantum-Authenticated Neural Semantic                    Weaving
-Protocol (QASWP)Abstract   The Quantum-Authenticated Neural Semantic
-Weaving Protocol (QASWP) is   a communication protocol that integrates
-quantum key exchange,   post-quantum cryptography, and neural-network-
-based semantic data   compression. QASWP enables two parties to
-establish a secure session   with quantum-generated shared keys and to
-exchange data in a highly   compressed form based on shared context and
-machine learning models.   The protocol provides mutual authentication
-(leveraging quantum and   post-quantum methods) and ensures integrity
-and confidentiality of   messages. It also introduces a novel quantum-
-assisted context    synchronization mechanism and an optional zero-
-knowledge proof   component for verifying AI model integrity. This
-document specifies    the QASWP protocol, including the handshake
-procedure, data    transfer format, security considerations, and
-implementation notes.Status of This Memo   This Internet-Draft is
-submitted to the IRTF Quantum Internet Research    Group (QIRG) for
-discussion. It is not an IETF standard and is    published for
-informational purposes. The document will expire and    may be updated
-or replaced by future versions. Comments are welcome.Copyright Notice
-Copyright (c) 2025 IETF Trust and the persons identified as    authors
-of the code. All rights reserved.   This document is subject to BCP 78
-and the IETF Trust's Legal    Provisions Relating to IETF
-Documents.Table of Contents   1. Introduction
-........................................... 3   2. Terminology
-............................................ 4   3. Protocol Overview
-...................................... 6   4. Handshake Procedure
-.................................... 8      4.1. Quantum Key Exchange
-.............................. 8      4.2. Classical Authentication and
-Key Confirmation ..... 9      4.3. Model Negotiation and Verification
-................ 10   5. Data Transfer Phase
-.................................... 12      5.1. Message Encoding and
-Compression .................. 12      5.2. Packet Format
-..................................... 13      5.3. Context Management
-................................ 14   6. Security Considerations
-................................ 15   7. Implementation Notes
-................................... 18   8. IANA Considerations
-.................................... 20   9. References
-............................................. 20      9.1. Normative
-References .............................. 21      9.2. Informative
-References ............................ 22   10. Acknowledgments
-....................................... 231. Introduction   Quantum-
-Authenticated Neural Semantic Weaving Protocol (QASWP) is an
-experimental protocol that combines quantum cryptography and    machine-
-learning-based semantic compression to achieve efficient,    secure
-communication. QASWP is designed for scenarios where both    high
-security (including post-quantum security) and bandwidth    efficiency
-are desired, such as future quantum internet applications    or AI-
-driven device communications.   The key features of QASWP are:   -
-**Quantum key exchange for authentication and confidentiality**:
-The protocol utilizes a quantum channel (e.g., entangled photon
-pairs) to generate shared secret keys and to verify the absence of
-man-in-the-middle attackers. These keys seed classical cryptographic
-operations, providing forward security and resistance to quantum
-computing attacks.   - **Neural semantic compression**: QASWP endpoints
-share a pretrained      neural network model that can compress and
-decompress messages by      focusing on their semantic content. By
-sharing context, endpoints      only transmit information that is new or
-unpredictable to the other      side, reducing message size.   -
-**Context synchronization**: Both parties maintain a synchronized
-context state (e.g., conversation history or shared knowledge) that
-evolves as messages are exchanged. A novel mechanism uses quantum
-shared randomness to help keep this context aligned.   - **Integrated
-verification**: Optionally, QASWP includes a step for      exchanging
-zero-knowledge proofs to assure each party that the      other is using
-an authentic, unmodified compression model and      following the
-protocol correctly, without revealing private details.   This document
-specifies QASWP in an RFC-style format. Section 3    provides an
-overview of how the protocol operates. Section 4    specifies the
-handshake phase in detail, including message flows    and fields.
-Section 5 covers the data transfer phase, defining the    message format
-and compression process. Section 6 discusses security    considerations,
-examining how QASWP defends against various threats.    Section 7
-provides implementation guidance and notes on practical    deployment.
-Finally, Section 8 and 9 address IANA considerations and    references,
-respectively.   The reader is expected to be familiar with basic
-cryptographic    concepts (encryption, digital signatures, etc.) and
-with the notion    of quantum key distribution. Familiarity with
-semantic communication    or neural network compression is beneficial
-but not strictly required    to implement the protocol as specified.2.
-Terminology   **Quantum Channel**: A communication channel capable of
-transmitting    quantum states (qubits). In QASWP, the quantum channel
-is used to    share entangled qubits or quantum bits between the two
-parties. This    channel is assumed to be point-to-point (no
-intermediate eavesdropper    can measure without detection).
-**Classical Channel**: A traditional data channel (e.g., TCP/IP
-connection) used to exchange classical messages (bits). The classical
-channel in QASWP will be encrypted and authenticated once the session
-is established.   **Endpoint / Party**: One side of a QASWP
-communication session. We    often refer to endpoints as Alice
-(initiator/client) and Bob    (responder/server) for clarity.
-**Session**: A single instance of the QASWP protocol execution, from
-handshake initiation to termination. A session is associated with
-certain negotiated parameters (like cryptographic keys and model
-context).   **Context**: The shared state or knowledge between endpoints
-that is    used for semantic compression. Context may include past
-messages,    environment knowledge, or the internal state of the
-compression model    that both parties update in tandem.   **Semantic
-Model**: A machine learning model (e.g., a neural network)    that both
-endpoints use to encode (compress) and decode (decompress)    messages.
-This model essentially defines a "language" or encoding    scheme based
-on semantics.   **Compression Engine**: The component/procedure that
-applies the    semantic model to produce compressed data from a message
-or to    reconstruct a message from compressed data.   **Quantum Key
-Exchange (QKE)**: The process by which two parties    use a quantum
-channel to obtain a shared secret key. QKE in QASWP    typically refers
-to the generation of a raw key via entangled qubits    and subsequent
-classical post-processing (error correction and    privacy
-amplification).   **Post-Quantum (PQ) Cryptography**: Classical
-cryptographic    algorithms believed to be secure against quantum
-adversaries (e.g.,    lattice-based encryption, hash-based signatures).
-QASWP uses PQ    algorithms for authentication and as a fallback key
-agreement.   **Zero-Knowledge Proof (ZKP)**: A cryptographic proof that
-allows one    party to convince another that a certain statement is
-true, without    revealing anything other than the truth of the
-statement. In QASWP,    a specific form called zk-SNARK (Succinct Non-
-interactive    Zero-Knowledge Argument) may be used to prove correctness
-of model    use or computations.   **MAC (Message Authentication
-Code)**: A short piece of information    (tag) that verifies the
-integrity and authenticity of a message,    generated using a secret
-key.   **AEAD (Authenticated Encryption with Associated Data)**: An
-encryption method that provides confidentiality and integrity
-simultaneously. E.g., AES-GCM. QASWP uses AEAD to secure message
-payloads on the classical channel.   **I-Frame / P-Frame (conceptual)**:
-Borrowed from video compression    terminology for understanding context
-resets, an "I-frame" would be    an independent message needing no prior
-context, whereas a "P-frame"    uses previous context. In QASWP, most
-messages are like P-frames    (context-dependent), with occasional
-context resets akin to I-frames.3. Protocol Overview   QASWP operates in
-two phases: the Handshake Phase and the Data    Transfer Phase.
-**Handshake Phase**:    The handshake establishes a secure context for
-communication:   - The peers first perform a Quantum Key Exchange (QKE)
-by sending      and measuring entangled quantum bits. This yields a
-shared random      secret and ensures no eavesdropper is present (if the
-quantum      transmission is undisturbed).   - Using the output of QKE,
-the peers engage in a classical exchange      to derive final session
-keys and authenticate each other. This      involves:       * Exchanging
-protocol version and capabilities (including which          semantic
-model to use for compression).       * Optionally exchanging
-certificates or identifiers and using a          post-quantum digital
-signature or a pre-shared key for entity          authentication.
-* Deriving encryption keys from the quantum secret and possibly
-a parallel post-quantum key agreement (hybrid approach).       *
-Optionally exchanging zero-knowledge proofs to attest to the
-correctness of their semantic model or software.       * Confirming that
-both parties have arrived at the same session          keys (via a key
-confirmation MAC).   If any step of the handshake fails (e.g.,
-verification checks fail or    an expected proof is invalid), the
-session is aborted. On success,    both sides hold:   - A shared session
-encryption key (and related keys for MAC if      separate).   - A
-synchronized initial context for the semantic model (this could      be
-just an "empty" context or include some agreed baseline knowledge).   -
-Assurance of the peer's identity (if applicable) and that both are
-in possession of the agreed model and keys.   The handshake is designed
-to be complete in a few round trips. The    inclusion of quantum
-exchange means an out-of-band process (entangled    photon transmission)
-precedes or runs in parallel to the first    classical messages.
-**Data Transfer Phase**:   Once the handshake is done, the parties can
-send application data    securely. When sending a message:   - The
-sender takes the message and inputs it into the Compression      Engine
-along with the current context. The engine produces a      compressed
-representation (a sequence of bits) which is typically      much smaller
-than the original message.   - The sender encrypts this compressed
-payload using the session key      (via an AEAD cipher). A header
-(including sequence number, etc.)      is attached in plaintext or in
-the AAD, and an auth tag is      generated.   - The receiver, upon
-getting the encrypted packet, checks the auth      tag and decrypts it,
-recovering the compressed payload.   - The receiver feeds the compressed
-payload into its Compression      Engine with its context, obtaining the
-reconstructed message.   - Both sender and receiver update their context
-state based on the      message (so that future messages can be
-interpreted relative to      this one).   In effect, each message
-transmitted with QASWP is not standalone; it    is woven into the
-semantic context that both sides share and update.   Additionally, QASWP
-may utilize periodic quantum signals or other    sync methods to ensure
-context alignment (for example, injecting a    known marker or resetting
-context after a certain number of messages    if drift is a concern).
-The Data Transfer continues until one or both parties decide to
-terminate the session. A session can be terminated gracefully with a
-closure alert (ensuring all remaining data and acknowledgments are
-flushed), or abruptly if an error is detected.   Throughout data
-transfer, security of each packet is maintained by    the
-encryption/MAC, and the context ensures that even if packets are
-observed, they are not intelligible without the model and context
-state (which are private). Also, if an adversary tries to inject or
-modify packets, the decryption/MAC verification will fail, and the
-protocol should drop those packets (or abort if a serious breach is
-detected).   QASWP does not itself guarantee reliable delivery (that is
-typically    handled by an underlying transport like TCP or by an
-application    layer). However, because the semantic encoding relies on
-sequence and    context, it is generally expected to run on a reliable,
-ordered    channel. If using an unordered or lossy transport (like UDP),
-an    additional reliability mechanism or restricting QASWP to
-idempotent    messages would be necessary.   In summary, QASWP aims to
-achieve a secure channel similar to TLS    (protecting confidentiality
-and integrity) while drastically reducing    the volume of data
-exchanged by leveraging shared AI understanding    between the
-endpoints. The quantum aspect ensures the security    cannot be
-retroactively broken by quantum adversaries, and the    semantic aspect
-aligns with an AI-native approach to communication.4. Handshake
-Procedure   In this section, we define the handshake messages and steps
-for QASWP.   The handshake can be conceptually divided into sub-phases:
-1. Quantum Key Exchange (entangled qubit distribution and key
-generation).   2. Classical Hello exchange (parameters and identities).
-3. Classical key confirmation and proof exchange.   4. Handshake
-completion (ready to send data).   The exact message flow is as follows:
-```   (Quantum) : [ Entangled qubits sent and measured by both parties ]
-Alice -> Bob: QASWP-ClientHello (classical)   Bob   -> Alice: QASWP-
-ServerHello (classical)   Bob   -> Alice: QASWP-ServerFinished
-(classical)   Alice -> Bob: QASWP-ClientFinished (classical)   ```
-Optionally, the ServerHello or a subsequent handshake message may
-carry proof data requiring an additional round trip (this is left
-flexible in case the proof is large and needs to be segmented).   Below
-we describe each part in detail:#### 4.1. Quantum Key Exchange   Before
-or during the ClientHello/ServerHello exchange, Alice and Bob    perform
-a quantum key exchange. This is not encapsulated in a TCP/IP    message
-but occurs via a separate quantum communication process:   - Alice and
-Bob establish a quantum link (through whatever means      their network
-provides; this specification does not dictate how      the quantum link
-is set up, only what is done with it).   - Over this link, they either
-run a QKD protocol like BB84 or use      entangled pairs. In either
-case, they obtain a raw sequence of      bits. They then perform
-classical post-processing (error      correction and privacy
-amplification) over an authenticated channel.     *Note:* Initially,
-there is no authenticated channel, which is a      circular dependency.
-In practice, QKD implementations use a small      pre-shared key or a
-public-key signature to authenticate this      phase. QASWP assumes a
-mechanism exists to authenticate the QKD      classical communication
-(which could be as simple as each device      having the other's public
-identity key from a certificate or a      short pre-shared secret).   -
-The result of QKD is a shared key K_q (256 bits, for example). If
-QKD fails (due to line disturbance or attack), the handshake      cannot
-proceed under quantum security mode. The protocol may      either abort
-or fall back to a purely classical key exchange      (depending on
-configuration and policy).   Once K_q is established, both parties will
-feed it into a key    derivation function (KDF) along with transcript
-info. This yields    sub-keys for use in the next steps:   - K_auth = a
-key for authenticating handshake messages (HMAC, etc).   - K_seed = a
-key used as an input to the post-quantum KEM (if doing      hybrid,
-maybe used to encrypt a PQ key).   - K_ctx  = seed for context
-synchronization (could be used to derive      initial random context
-values or initial model state tweaks).   - etc., as needed. All
-derivations should be from a cryptographic      hash function (e.g.,
-KDF(key=K_q, label="auth", transcript)).#### 4.2. Classical
-Authentication and Key Confirmation   Once quantum key exchange is done
-(or in parallel), the classical    handshake messages are exchanged:
-**QASWP-ClientHello**:    This is the first classical message from Alice
-to Bob.   It contains:   - Protocol version and a list of supported
-options (e.g., supported      cipher suites, model IDs, proof
-algorithms).   - A random nonce (to prevent replay).   - Alice's public
-identity info:       * If using certificates: Alice's X.509 certificate
-(which includes          her public signature key and identity).       *
-If using raw public keys or preshared identities: an identifier
-and the public key, or just an identifier if a PSK is known.   - A
-commitment or identifier for the semantic model Alice proposes      to
-use. This could be a hash of the model parameters or a well-known
-model ID (if models are standardized).   - (Optionally) A zk-proof or a
-placeholder for it. If Alice needs to      send a proof at handshake,
-she might include it here if it's ready      (or in a later message).
-- A digital signature covering the important parts of this ClientHello
-(like the nonce, offered parameters, model ID, etc.), signed with
-Alice's private identity key. The signature may be a post-quantum
-scheme (preferred) or a hybrid signature that includes both a
-classical and PQ signature for transition safety.   - A MAC (e.g., HMAC)
-using K_auth (from quantum) over the whole      message (to authenticate
-it at the bit level). This binds the      quantum key to this message.
-The ClientHello thus provides Bob with Alice's identity and her
-capabilities, and gives Bob assurance (via MAC with K_auth) that
-Alice truly has the quantum key. The signature gives identity
-authentication (if Bob trusts the certificate or PSK arrangement).
-**QASWP-ServerHello**:    Bob replies with his own data:   - Protocol
-version and selection of options (which cipher suite,      which model
-ID to use from Alice's list, etc.).   - Bob's nonce.   - Bob's identity
-info (certificate or identifier) similar to Alice's.   - A commitment or
-identifier for the model (should match Alice's or      be chosen from
-her proposals; if not, it indicates a negotiation      result).   -
-(Optional) Bob's zk-proof or placeholder for it, if applicable.   -
-Bob's digital signature covering both Alice's and Bob's nonces and
-the handshake transcripts up to this point (to prevent tampering      or
-parameter injection). Again, a PQ signature algorithm is used.   - A MAC
-using K_auth over the message (to ensure integrity with      respect to
-the quantum-derived key).   At this stage, both sides have exchanged
-identities and preferences,    and know each other's public keys and
-model choices. They also both    have K_q (quantum key) and have
-verified the presence of the MACs,    meaning the quantum key was used,
-hence no MITM on the quantum leg.   They now likely perform a **key
-agreement** to get a final session    key:   - If using a post-quantum
-KEM (e.g., Kyber): Alice might have included      a PQ public key in her
-ClientHello. Bob now includes the KEM      ciphertext in his ServerHello
-(which encapsulates a random key      K_pq). Alice will decapsulate it
-to get K_pq. Now both have K_pq.   - If using Diffie-Hellman (classical
-or PQ): could be similar, but      since we already have quantum key, a
-Diffie-Hellman is optional or      purely for fallback.   - If using
-only quantum: they might skip additional key exchange      and just use
-K_q.   In any case, by end of ServerHello, both sides derive the final
-session secrets:   - Master Secret = f(K_q, K_pq, transcripts) via a
-secure KDF.   - From Master Secret, derive session encryption key,
-session MAC key,      etc., using a PRF.   After sending ServerHello,
-Bob can also send **ServerFinished**    immediately (to save a round
-trip):   - ServerFinished contains a short value (e.g., 32-bit or
-256-bit)      that is a verification tag (like a MAC or hash) over the
-entire      handshake so far, keyed with the new session key. For
-example,      an HMAC of all handshake messages using a key derived from
-Master      Secret (this is analogous to TLS Finished message).   - This
-assures Alice that Bob derived the same Master Secret and      that
-everything is in order.   Alice, upon receiving ServerHello and
-ServerFinished, will verify:   - Bob's signature (to authenticate
-identity).   - Bob's MAC (to ensure integrity and that Bob had K_q).   -
-The PQ KEM decapsulation (to get K_pq, if used).   - Compute Master
-Secret and verify the ServerFinished tag.   If all checks out, Alice
-considers the handshake almost complete.   Alice then sends
-**ClientFinished**:   - Similar to ServerFinished, a tag over the
-handshake (including      ServerFinished) keyed with Master Secret,
-proving that she also      has the keys and that the handshake is
-complete on her side.   - This is the final confirmation. After sending
-this, Alice can send      encrypted data; Bob, upon receiving it and
-verifying, can also      send data.#### 4.3. Model Negotiation and
-Verification   Negotiating the semantic model is a unique aspect of
-QASWP:   - The ClientHello lists one or more model identifiers or
-versions      that Alice supports (and has the model files for).   - The
-ServerHello picks one of those (or responds with an error/no      common
-model if none match). All further communication will assume      that
-model.   - Each model ID corresponds to a known architecture and
-possibly      parameter set. The endpoints must ensure they actually
-have the      same parameters. If the models are standardized (e.g.,
-"Model      X v1.2" means a fixed weight set), then just agreeing on the
-ID      is enough.   - If models can be custom or trained per user, then
-a hash or      fingerprint of the model's parameters should be
-exchanged. For      example, Alice could send H(M) of her model weights,
-Bob checks      against H(M) of his model weights for that ID. If they
-differ,      they do not actually have the same model and the session
-should      abort or fall back (this protocol assumes identical models
-are      present; it doesn't handle on-the-fly model transfer, which
-would      be too heavy to do in handshake).   The verification via
-zero-knowledge proof:   - If required (perhaps in high security mode),
-Alice and Bob exchange      proofs that the model they claim to use is
-indeed the one they      have loaded, and/or that they follow the
-protocol. The details of      such proofs are beyond the scope of this
-spec, but generally:       * The proof could show the knowledge of the
-model's weights          corresponding to the hash they provided
-(without revealing          them).       * Or a proof that a sample
-input run through their encoder          produces a certain output
-(proving correct functioning).     - These proofs, if used, might be
-attached to ClientHello and        ServerHello, or might be sent in
-separate messages if large.     - The protocol should allow for a
-"Proof" message if needed:         Alice -> Bob: QASWP-ClientProof
-Bob -> Alice: QASWP-ServerProof (or combined with Finished)     - If
-proofs fail verification, the handshake fails.   In summary, by the end
-of the handshake, both parties have:   - Authenticated each other (using
-quantum and PQ methods).   - Agreed on a symmetric encryption key and
-context for communication.   - Agreed on and verified a semantic model
-to use for compression.   - (Optional) Verified via proofs that the
-other side is honest in      the above.   Now the secure channel is
-ready for use.5. Data Transfer Phase   After a successful handshake, all
-further messages in the session    are encrypted and encoded according
-to QASWP data format. This section    describes how application data is
-handled in QASWP.#### 5.1. Message Encoding and Compression   Each
-plaintext message to be sent through QASWP (which could be an
-application-layer message like a JSON payload, a chat message, sensor
-reading, etc.) undergoes the semantic compression process:   -
-**Input**: plaintext message `M` and the current context `C` (which
-both sender and receiver share from previous interactions).   -
-**Encoding**: The sender's CompressionEngine uses the agreed model
-to encode `M` in context `C`, yielding compressed data `Z`. This
-may be a binary string of variable length.   - **Output**: `Z` is the
-encoded form of `M`. The context state is      then updated: `C_new =
-update(C, M)`. The sender will now consider      `C_new` as the context
-for future messages.   On the receiving side:   - The receiver knows the
-context `C` corresponding to all messages      prior to this one
-(initially the context from handshake, then      updated as each message
-comes in).   - **Decoding**: The receiver's CompressionEngine takes `Z`
-and `C`      and decodes to reconstruct `M'` (the receiver's estimate of
-the      original message). Ideally, `M'` equals `M` if the model and
-context      are perfectly synchronized and the channel introduced no
-errors.      Minor differences could occur if the model is lossy or
-approximate,      but for most textual/data communications, it should be
-exact or      acceptably close.   - The receiver updates its context:
-`C_new = update(C, M')`. Because      `M'` should equal `M`
-semantically, the context remains aligned      with the sender's new
-context.   **Context Update Mechanics**:   - For deterministic contexts
-(like conversation history), both sides      appending the message to
-the history naturally syncs context.   - For neural network state, e.g.,
-if using an RNN, both sides feeding      `M` into the RNN yields the
-same new hidden state.   - If the model uses randomness (like dropout or
-sampling), QASWP      ensures determinism by either using fixed random
-seeds or the      quantum-synced random bits as common entropy so both
-do the same      thing.   - The protocol may incorporate an explicit
-context identifier or      version number in each packet, so the
-receiver knows if it is      decoding with the correct context. For
-instance, a context      version could be simply a message sequence
-number if each message      updates context sequentially.   **Error
-Handling**:   - If decryption fails (bad auth tag), the packet is
-discarded and      considered an attack or corruption. The session might
-be terminated      depending on severity.   - If decryption succeeds but
-the receiver cannot decode `Z` (e.g.,      if `Z` is malformed or if
-context was wrong), the receiver should      request a
-resynchronization. This can be done by sending a special      control
-message indicating context reset needed. One strategy is      to
-reinitialize context to a checkpoint or ask the sender to resend
-something in uncompressed form. These details are policy-specific
-and not fixed by the protocol, but a simple approach is:       * If
-decoding fails, abort the session (as it's likely out-of-sync
-or an attack).       * Alternatively, have a "fall back to raw" flag:
-the sender can          re-send the last message without compression if
-it suspects          the receiver got out of sync.#### 5.2. Packet
-Format   QASWP data packets (after handshake) have a specific format
-sent    over the classical channel. We define the format in an abstract
-sense (actual implementation could be binary or JSON, etc., but
-ideally binary for compactness):   ```   0                   1
-2                   3   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+   |
-Seq Number (32 bits)          | Flags (8)     |  Context ID   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+   |
-Ciphertext Length (16 bits)   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-------------------------------   |
-Encrypted Payload (variable length)                         ...
-+---------------------------------------------------------------+   |
-Authentication Tag (e.g., 16 bytes for GCM)                 ...
-+---------------------------------------------------------------+   ```
-The above is one possible representation:   - **Sequence Number**: A
-32-bit monotonically increasing counter for      each packet. This
-ensures packets can be ordered and prevents      replay. This can also
-double as the context version if each message      corresponds to one
-update.   - **Flags**: 8 bits for control flags. Defined flags might
-include:       * 0x01 = "Context reset" (indicates this packet's payload
-is          encoded with a reset or fresh context, like an I-frame).
-* 0x02 = "Proof attached" (indicates after the tag, a proof
-structure follows).       * 0x04 = "Ack required" or other QoS
-indicators as needed.       * Others are reserved.   - **Context ID**: 8
-bits to identify which context or model is used      if multiple might
-be in use (e.g., if in one session, two contexts      are interleaved,
-or if different flows use different models). In      normal usage, this
-can be 0 if there's only one context. It can      also help with re-
-sync: if a context reset is sent, increment the      context ID so that
-old out-of-sync messages are ignored.   - **Ciphertext Length**: 16-bit
-indicating how long the encrypted      payload is. If the payload is
-large, multiple packets might be      used or a higher bitsize could be
-chosen (but semantic payloads      are usually small).   - **Encrypted
-Payload**: This is the encryption of the compressed      data `Z`.
-Encryption is done using an AEAD cipher with the session      key. The
-associated data (which is not encrypted but authenticated)      should
-include the header fields (Seq, Flags, Context ID, length)      so that
-any tampering there is detected by tag verification.   -
-**Authentication Tag**: Output of the AEAD cipher (e.g., 128-bit
-tag for AES-256-GCM). Verifies both header and payload.   The packet is
-transmitted over the existing classical channel (which    could be a TCP
-socket, WebSocket, etc., depending on implementation).    Since QASWP
-might run on top of an ordered transport, SeqNumber    duplication
-checks are mostly for security (replay prevention). If    using an
-unordered transport (not typical), Seq helps reorder.   The receiving
-side on getting a packet will:   - Check Seq Number is as expected
-(e.g., either exactly one more than      last seen or in a window if
-parallel flows).   - Use the correct context state corresponding to the
-Context ID and      current state to attempt decryption.   - Decrypt
-with AEAD, verify tag using the session key and associated      data.
-- If decryption fails or tag mismatch, discard (and possibly record
-an error). Potentially, after a certain number of failures, abort
-session (assuming an attack or irrecoverable desync).   - If decrypt ok,
-retrieve `Z` (compressed data).   - Determine which context to use for
-decoding `Z` (based on Context      ID and possibly the Flags if it’s a
-reset).   - Decode `Z` to `M'`.   - Update context (for that Context
-ID).   Note: The concept of multiple contexts or context ID is included
-for    extensibility. A simple implementation can always use a single
-context (ID = 0 for all messages). Multi-context might be used if,
-for example, two independent data streams in one session each keep
-their own semantic context (like two conversation topics).   If the
-"Proof attached" flag is set, it means after the Auth Tag,    there is
-additional data in the packet carrying a proof (likely    unencrypted or
-separately handled). This is a special case for    sending zk-SNARK
-proofs mid-session if needed. The format of that    proof data would be
-defined when needed; presumably it includes a    length and the proof
-bytes. The receiver would parse the proof after    verifying the main
-packet, then verify the proof itself using the    appropriate
-verification key or circuit.#### 5.3. Context Management   Context
-consistency is vital for QASWP effectiveness. The protocol    includes
-measures to maintain and, if needed, restore context sync:   - Each side
-tracks the context state associated with the last      processed message
-(or each context ID separately).   - The handshake established an
-initial context (likely empty or a      known baseline).   - As each
-message is processed, the context evolves deterministically      for
-both parties.   Potential causes of context drift:   - Message loss
-(shouldn't happen on reliable transport, but if it      does, the
-receiver might miss an update).   - Message reordering (again unlikely
-if ordered, but out-of-order      processing could desync if context is
-applied in wrong order).   - A decoding error or discrepancy in model
-state (if an edge case      or numerical issue made the model produce
-slightly different      results on the two sides, though we try to avoid
-that by design).   **Context Reset Mechanism**:   QASWP can perform a
-context reset by transmitting an "I-frame" style    message. This would
-typically be indicated by the Flags in a packet:   when the "Context
-reset" flag is 1, it means the payload of that    packet is encoded
-without reliance on prior context (or with a very    minimal baseline
-context). Essentially, the sender reinitializes    their compression
-model (or uses a fresh instance) for that message.    The receiver will
-do the same before decoding it. After that message,    both will
-continue from the new state.   When to reset:   - After a certain number
-of messages or when context might be      saturating or no longer
-providing benefit.   - When a possible sync issue is detected (like a
-missed message).   - Or periodically, just as a safeguard (e.g., every
-1000 messages or      when a new conversation topic starts).   Resets
-help bound the damage if context gets out of sync — you    won't be lost
-forever; a reset realigns things.   **Quantum context sync**:   If the
-protocol is configured to use quantum-assisted context    sync, at
-intervals the endpoints derive some fresh random data from    new
-entangled qubits and feed that into the context. Practically:   -
-Suppose every N messages, they perform a quick QKE of a few bits
-(or repurpose some of the ongoing QKD key stream).   - They get a common
-random value R.   - They both use R as a seed to perturb the model's
-state slightly      in a known way (like resetting the model's random
-generator seed      to R, or shuffling some internal representation).
-- An attacker who is only on the classical channel does not know R
-and thus cannot predict this context change or forge messages
-around it.   - This further hardens against any adversary trying to
-exploit      patterns; it also ensures that if contexts were diverging
-due to      numerical issues, they are snapped back to a common
-reference      regularly.   **Acknowledge and Flow Control**:   QASWP
-does not inherently require acknowledgments at the protocol    level
-(assuming underlying transport is reliable). However,    implementations
-might use them for application logic or for    measuring context sync
-(e.g., a simple ACK message like "got seq X"    could help double-check
-both sides are aligned; these could be at    application layer).   If
-using an unreliable transport, explicit ACK packets would be    needed
-to implement retransmissions (but that essentially reimplements    a
-reliability layer, which is beyond QASWP's scope).   **Maximum context
-length**:   In some cases, the model might have limits (like context
-window for    a transformer). If context grows too long (too many past
-messages),    the protocol should either:   - Drop off older context
-data (e.g., only keep last K messages).   - Or compress/summarize
-context (like combine older messages into      a summary stored in
-context).   The specifics depend on the model. The protocol doesn't fix
-this,    but implementers should be aware to avoid unbounded memory
-growth.   Finally, if a serious unrecoverable error happens (keys
-mismatch,    context irreparably wrong), the parties should terminate
-the session    and possibly start a new handshake if they want to
-continue, rather    than continue with bad state.6. Security
-Considerations   This section analyzes QASWP's security properties and
-potential    vulnerabilities.   **Confidentiality**:    All user
-messages are encrypted with strong symmetric encryption    (AES-256-GCM
-or equivalent). The keys for encryption are derived    from a
-combination of quantum and post-quantum processes, so an    attacker
-would need to break both quantum key distribution and    the chosen
-classical algorithms to recover plaintext. The semantic    compression
-adds an additional obscurity layer: even if an attacker    got the
-compressed bits (without keys), interpreting them requires    knowing
-the exact model and context. That said, we do not treat    compression
-as a security measure by itself (since through known    plaintext
-attacks, an attacker might guess content if they somehow    recognized
-patterns), so we rely on encryption as the primary    confidentiality
-guarantee.   **Integrity and Authenticity**:   QASWP uses authentication
-at multiple layers:   - The handshake messages are authenticated via
-digital signatures      (for identity) and via HMAC tags derived from
-the quantum key      (to ensure no alteration).   - Each data packet has
-an AEAD tag to detect tampering or forgery.   If a packet is modified or
-injected by an attacker, the receiver    will reject it due to tag
-mismatch. Sequence numbers also help    detect replay or reordering
-attacks.   **Authentication of parties**:   During handshake, assuming
-the certificates or pre-shared keys are    properly managed, each party
-verifies the other's identity. The    quantum exchange assures that the
-person you're handshaking with is    indeed directly connected (no MITM)
-because if it were not the real    Bob, the quantum test would fail (or
-the classical MAC using K_q    would fail if MITM didn't have K_q).
-Therefore, QASWP achieves mutual    authentication analogous to a TLS
-full handshake, but with the added    trust that the keys come from
-quantum measurements only the genuine    endpoints could produce.
-**Post-Quantum Security**:   All cryptographic components are chosen to
-be quantum-resistant:   - Symmetric 256-bit keys (safe from Grover's
-algorithm which at      best gives sqrt speedup).   - Lattice-based or
-hash-based signatures that are not known to be      breakable by
-quantum.   - Optionally lattice-based key exchange (Kyber) in addition
-to the      quantum keys.   Even if an attacker records the entire
-session now, they should not    be able to decrypt it in the future,
-because they would need the    one-time pad-like quantum key which they
-could not have obtained    without detection, and/or break the lattice
-crypto.   **Forward Secrecy**:   QASWP provides forward secrecy in that
-the session keys are derived    from ephemeral quantum outcomes (and
-optionally ephemeral PQ    exchange). If long-term keys (like identity
-keys) are compromised    later, past session content remains safe. The
-quantum key is used    immediately and then not stored; even if someone
-somehow got a hold    of the classical transcript and your identity
-keys, they couldn't    derive the session key without the quantum bits.
-**Key Compromise Implications**:   - If the quantum key K_q is somehow
-exposed (which would imply one      endpoint was compromised since an
-eavesdropper can't get it      undetected), the attacker could
-impersonate or decrypt that      session. But since there's a new
-quantum exchange each session,      compromise doesn't affect future
-sessions.   - If a party's long-term private key (for signatures) is
-stolen,      the attacker could impersonate that party in future
-handshakes.      This is mitigated if that party's certificate can be
-revoked or      by using short-lived keys. Also, the attacker still
-can't break      past sessions because they lack those sessions' K_q and
-K_session.   - If the model information is stolen, an attacker might
-guess what      messages might look like if they intercept encrypted
-payloads and      brute-force some possibilities through the model.
-However, without      the key to decrypt, they just have ciphertext.
-Even with ciphertext,      trying to guess plaintext by model inversion
-is extremely hard      (they would have to guess both context and
-message correctly and      still wouldn't verify without the tag). So
-model theft alone      doesn't break confidentiality, though it could
-help an attacker      craft confusing messages if they ever got a
-foothold to inject      plaintext (but they'd still fail the MAC if not
-a full MITM).   **Resilience to MITM**:   The combination of quantum
-eavesdropping detection and classical    authentication makes QASWP
-robust against man-in-the-middle:   - If a MITM tries to intercept the
-quantum exchange, the QBER      (quantum bit error rate) will spike and
-the key will be aborted.   - If a MITM somehow let the quantum through
-but then intercepted      the classical (which implies they also have
-K_q, not possible      without detection), they'd still have to forge
-signatures or      proofs to impersonate Alice and Bob to each other,
-which would      fail if the real keys are known to each side.   - The
-handshake MACs ensure the MITM can't modify handshake parameters
-(like downgrading algorithms or changing model ID) without detection.
-**Side-channels and Metadata**:   QASWP's semantic compression
-potentially leaks some metadata: for    instance, the length of the
-compressed payload might give hints    about the content (a very short
-payload could indicate a predictable    message, etc.). An attacker
-might guess that if every night the    compressed message is 5 bytes
-long, perhaps it's the same routine    status update. To mitigate this,
-padding can be used. The protocol    can allow some padding in the
-plaintext before compression or in    the ciphertext to normalize
-lengths. However, padding affects    compression efficiency.
-Implementation can choose to pad all messages    to a fixed length
-bucket if that is a concern.   Another potential issue is the model
-could be susceptible to    adversarial inputs (like adversarial examples
-in ML) or information    leakage. For example, if the model is poorly
-designed, maybe an    attacker could craft a context and message that
-cause the model to    output a known pattern in `Z` that they can
-recognize even without    keys. We assume the model is not publicly
-known to the attacker    (or even if architecture is known, the weights
-are secret), and that    it doesn't have trivial output patterns.
-Nonetheless, one should    evaluate models for such side channels. In
-high security cases,    layering standard compression or encryption
-might be advisable if    there's doubt (though we already encrypt after
-compression, which    should hide any such patterns anyway).   **Denial
-of Service (DoS)**:   The protocol has some expensive steps an attacker
-could exploit:   - Quantum exchange: an attacker could bombard the
-quantum channel      or try to cause high error rates, forcing repeated
-retries. This      could degrade the system or waste resources. To
-mitigate, systems      will likely have monitoring on QBER and abort
-after too many fails.   - Proof verification: verifying zk-SNARK proofs
-is relatively fast,      but generating them is slow. An attacker could
-attempt to make      the honest party compute many proofs (if the
-protocol required      responding to proof requests). In QASWP, proofs
-are mainly in      handshake and possibly occasional, so not an
-interactive DoS      vector per se. But this is something to watch:
-e.g., not allowing      an unauthenticated user to trigger heavy proof
-generation.   - Large messages or contexts might be used to exhaust
-memory. QASWP      can mitigate by setting limits on message size and
-context length,      and by using streaming if big data must be sent
-(though sending      large raw data defeats semantic compression
-benefits; QASWP is      better for message-oriented data).   - The
-handshake itself requires some computation (signatures, KEM
-decaps). If an attacker initiates many handshakes and drops them,
-it could cause load. Rate limiting or puzzles can be applied at      a
-higher level if needed.   **Quantum-specific attacks**:   One must
-consider that the security of the quantum channel is    hardware-
-dependent. E.g., an attacker might exploit device    vulnerabilities
-(detector blinding attacks in QKD hardware, etc.).    Those are outside
-the protocol spec's scope but implementers need to    use quantum
-hardware that has countermeasures for known issues and    follow QKD
-standards (like ITU-T recommendations for QKD security).   **Privacy**:
-QASWP by itself doesn’t incorporate anonymity or traffic analysis
-resistance beyond encryption. Identities are revealed in handshake
-(certificates). If anonymity is needed, one could integrate QASWP
-with an anonymity network or use pseudonymous keys. The semantic
-compression might actually reduce distinguishability of traffic
-(since everything is encoded to what looks like pseudorandom bits
-after encryption). All messages after handshake are uniform encrypted
-packets. However, an observer could still note the timings and sizes
-of packets. Padding and timing obfuscation would be needed for    high-
-level traffic analysis resistance.   In summary, QASWP is designed to be
-**secure against passive and    active attackers** who have up to full
-control of the classical    network but (presumably) cannot undetectably
-interfere with the    quantum channel. The combination of quantum and
-post-quantum methods    ensures long-term confidentiality. The main
-security reliance is on    the proper implementation of these methods
-and the correctness of    the shared model.7. Implementation Notes
-This section provides guidance for implementers regarding integration,
-performance tuning, and interoperability.   **Model Distribution**:
-Both parties need the same semantic model (neural network) in
-advance. This could be handled in several ways:   - Out-of-band: The
-model is installed on devices beforehand (for      example, two IoT
-devices might each be flashed with the same      compression model
-tailored to their application).   - Download during handshake: If models
-are versioned and relatively      small, one side could send the model
-to the other if needed.      However, many models (with weights) can be
-tens of megabytes, not      feasible to send in a handshake. Better to
-have it pre-shared or      referenced by an ID.   - Model selection: If
-multiple models exist for different domains      (text vs. image, etc.),
-ensure the protocol negotiates the right      one. Possibly the
-handshake "supported models" list should include      a domain or type
-as well.   **Quantum Channel Integration**:   The implementation of
-QASWP will typically run on top of a classical    transport (like TLS
-runs over TCP). The quantum channel is separate.    One approach is to
-treat the QKD system as a black box that supplies    keys. For example,
-the code could call into a quantum key supplier    library that yields
-K_q and a flag indicating if the quantum    transmission was clean. This
-decouples the specifics of quantum    hardware from the rest of QASWP
-stack.   Synchronization: The quantum exchange might not be
-instantaneous    relative to network messages. Implementation might
-start the QKD    process and concurrently proceed with some handshake
-steps but    cannot complete handshake until K_q is ready. This suggests
-a    multi-threaded or event-driven design where handshake waits on
-quantum readiness.   Also consider failure modes: if quantum key
-generation fails (maybe    due to line conditions), implementation could
-either fall back to    classical or try again or abort according to
-configuration.   **Memory and State**:   The context state for the model
-should be stored and updated    carefully. If multithreading, ensure no
-two threads send messages    on the same session concurrently or else
-context updates might race.    Probably enforce that only one message at
-a time is being encoded or    have a queue.   The model itself (neural
-net) might use a lot of memory. If devices    have limited RAM, consider
-using smaller models or quantized    versions (8-bit weights instead of
-32-bit) to trade a tiny bit of    compression efficiency for memory.
-If multiple sessions run in parallel (with different contexts each),
-you'll likely need separate model instances or at least separate
-context state per session. Sharing the same model weights is fine,
-but each session must track its own hidden state.    **Performance
-optimizations**:   - Use hardware crypto: AES-GCM, SHA-3, etc. use CPU
-or hardware      accelerators (many platforms have these).   - If a
-large portion of CPU is spent in neural model inference,      consider
-using a machine learning accelerator or GPU if available.      Some IoT
-devices might not have that, so then ensure the model is      small.
-There's a balance: a bigger model compresses better (fewer      bits on
-network) but uses more CPU.   - Possibly allow adjustable compression
-levels: e.g., a device can      decide to only partially compress if
-it's under heavy load (like      skip one step of refinement in encoding
-to save CPU). This could      be a negotiated parameter or even dynamic
-(with a flag indicating      "low compression mode" temporarily). The
-other side would need to      know how to decode accordingly, so it's
-not trivial to change on      the fly without pre definition.
-**Interoperability and Versioning**:   QASWP is versioned (the protocol
-itself has a version number in    ClientHello). If future versions
-change handshake or fields, the    version negotiation should ensure
-only matching versions proceed.   If different implementations support
-different cipher suites or    model sets, the negotiation in handshake
-should handle it gracefully    (if no common cipher or model, they must
-abort with a clear error).   Ideally, maintain an IANA registry (see
-below) for QASWP cipher    suites (quantum+PQ algorithm combos) and
-model IDs (maybe a namespace    or URN for model references).   Because
-the field sizes for lengths and sequence numbers are fixed    in the
-spec, be mindful of their limits (e.g., SeqNumber 32-bit will    wrap
-after 4 billion messages; in a long-running session that might
-actually happen if sending hundreds of messages per second for years,
-so one should handle wrap-around or renegotiate keys before that).
-**Error Handling**:   If something goes wrong (bad MAC, decode failure,
-proof invalid, etc.):   - The implementation should send an alert and
-abort the session.      Perhaps define an "Alert" message type (similar
-to TLS Alert) with      codes like BadRecordMAC, DecompressionFail, etc.
-- Once an error is detected and an alert is sent/received, the
-session keys should be discarded and no further communication
-allowed on that session.   Logging: For debugging, it helps if an
-implementation can log whether    an error was due to cryptographic
-failure vs model decode failure.    But be careful not to reveal
-sensitive info in logs (like key    material or plaintext).   - In
-particular, if a proof fails, log it but also consider it could      be
-an attack (someone trying to pass a wrong proof).   **Testing**:   It's
-advisable to test QASWP components independently:   - Test quantum key
-integration with a simulator if real hardware      isn't available
-(simulate a random key and some error rate).   - Test compression
-separately on sample data to ensure the model      yields correct
-results and that encoding-decoding is lossless for      what it needs to
-be.   - Test the entire handshake flow with various parameter choices
-and      check that keys match, context aligns.   - Fuzz test the packet
-parsing and state machine to ensure no      unexpected input can crash
-it or break out (especially because      we've introduced a fairly
-complex state machine).   - Interop test between two independent
-implementations (if any) to      ensure the spec is followed correctly.
-**Fallback modes**:   If configured, QASWP can operate without a quantum
-channel (pure    classical). This basically turns it into a TLS-like
-handshake using    just PQ algorithms and then the same semantic layer.
-For testing    or early deployments (where quantum links are rare), this
-mode    might be used. But the security then relies entirely on the PQ
-crypto.   Implementations might allow a flag "quantum_required". If true
-and    quantum is not available or fails, then session aborts. If false,
-it will do its best with what’s available.   Similarly, one could allow
-disabling the SNARK proof requirement    for performance if both sides
-agree (perhaps indicated by a    "Proofs: none" in handshake).   These
-toggles should be clearly logged or indicated to avoid a false    sense
-of security (e.g., know when you're not actually using quantum    keys
-or skipping proofs).   **Use of standard libraries**:   For
-cryptography, use established libraries (OpenSSL, libsodium,    PQCrypto
-libs, etc.) especially for things like Dilithium, Kyber    which might
-be tricky to implement from scratch correctly.   For zero-knowledge
-proofs, if implementing that part, one could use    libraries like
-libsnark or zk-SNARK frameworks, but that requires    setting up
-circuits and keys. It's complex and might be beyond many    use cases
-initially, so an implementer could decide to omit the    proof feature
-in a first version or use a simpler approach (like    just verifying
-model hash by trust rather than ZKP).   **Hardware considerations**:   -
-Quantum transceivers might be external devices. The implementation
-might interface via an API to that hardware. Ensure this
-communication is secure (because if an attacker can fake being the
-QKD device, they'd feed known keys, etc. - unlikely scenario but
-just ensure authenticity of the quantum device output).   - If the
-environment is such that quantum channel is short-range      (like
-within the same building), the implementation might skip      certain
-heavy identity checks if physically secure. But generally      it's
-better not to skip just in case.   - On constrained devices, consider if
-the overhead of QASWP is worth      it. For very simple sensors, a tiny
-model might not compress much      and could be overkill. QASWP shines
-when there's redundancy to      exploit and security to enforce.8. IANA
-Considerations   This document defines a new protocol but does not yet
-specify    particular IANA registries. Potentially, if QASWP were to be
-assigned    a standard port number, an IANA assignment would be needed.
-For example, if running directly over UDP or TCP, one might request:   -
-TCP port XXX for QASWP (this would allow easier firewall
-identification).   However, QASWP could also be used as a TLS-like
-mechanism on any port    or as part of an application protocol, so a
-dedicated port is not    mandatory.   Additionally, if the protocol were
-standardized, IANA registries    could be created for:   - QASWP Cipher
-Suite IDs (each combination of quantum key method +      KEM + signature
-+ cipher could have an ID).   - QASWP Model IDs (if standardized models
-are enumerated).   - QASWP Named Groups or other constants.   As of this
-version, no codepoints are formally requested from IANA.9.
-References#### 9.1. Normative References   [RFC2119] Bradner, S., "Key
-words for use in RFCs to Indicate              Requirement Levels", BCP
-14, RFC 2119, March 1997.   [RFC9340] Tagliaferri, D., et al.,
-"Architectural Principles for a              Quantum Internet", RFC
-9340, March 2023.   (Note: Additional normative references would include
-specifications    of cryptographic algorithms like NIST PQ standards,
-but those are    omitted for brevity.)#### 9.2. Informative References
-[QKD-Myths] Ling, X., et al., "Quantum key distribution and
-authentication: Separating facts from myths", Amazon
-Science Blog, 2025.   [QGP]      Wang, S., "A Quantum Good
-Authentication Protocol",                Journal of CS IAC, 2025.   [AI-
-Native6G] Ogenyi, F., et al., "AI-native 6G: integrating semantic
-communications...", Frontiers in Comm. and Netw., 2025.   [DeepSC]
-Xie, H., et al., "Deep Learning Enabled Semantic
-Communication Systems", IEEE Trans. on Wireless Comm.,
-2021.   [ZK-ML]    Maheri, M., et al., "TeleSparse: Verifiable Deep
-Neural                Networks", PETS 2025.10. Acknowledgments   The
-author thanks colleagues at CPUTER Inc. and members of the QIRG    for
-insightful discussions on integrating quantum channels with    semantic
-communications. Portions of this work were inspired by    early drafts
-and prototypes developed by the QASWP design team.    Special thanks to
-Jane Doe for contributions on the zk-SNARK    integration, and to Dr.
-Alice Bobovitch for theoretical analysis of    context synchronization.
-Any errors or omissions are solely the    author's responsibility.
+Internet-Draft              QASWP Specification            N. Nedovodin
+Intended status: Experimental                      CPUTER Inc.
+Expires: April 30, 2026                       October 30, 2025
+
+                 Quantum-Authenticated Neural Semantic 
+                   Weaving Protocol (QASWP)
+
+Abstract
+
+   The Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP) is
+   a communication protocol that integrates quantum key exchange,
+   post-quantum cryptography, and neural-network-based semantic data
+   compression. QASWP enables two parties to establish a secure session
+   with quantum-generated shared keys and to exchange data in a highly
+   compressed form based on shared context and machine learning models.
+   The protocol provides mutual authentication (leveraging quantum and
+   post-quantum methods) and ensures integrity and confidentiality of
+   messages. It also introduces a novel quantum-assisted context 
+   synchronization mechanism and an optional zero-knowledge proof
+   component for verifying AI model integrity. This document specifies 
+   the QASWP protocol, including the handshake procedure, data 
+   transfer format, security considerations, and implementation notes.
+
+Status of This Memo
+
+   This Internet-Draft is submitted to the IRTF Quantum Internet Research 
+   Group (QIRG) for discussion. It is not an IETF standard and is 
+   published for informational purposes. The document will expire and 
+   may be updated or replaced by future versions. Comments are welcome.
+
+Copyright Notice
+
+   Copyright (c) 2025 IETF Trust and the persons identified as 
+   authors of the code. All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal 
+   Provisions Relating to IETF Documents.
+
+Table of Contents
+
+   1. Introduction ........................................... 3
+   2. Terminology ............................................ 4
+   3. Protocol Overview ...................................... 6
+   4. Handshake Procedure .................................... 8
+      4.1. Quantum Key Exchange .............................. 8
+      4.2. Classical Authentication and Key Confirmation ..... 9
+      4.3. Model Negotiation and Verification ................ 10
+   5. Data Transfer Phase .................................... 12
+      5.1. Message Encoding and Compression .................. 12
+      5.2. Packet Format ..................................... 13
+      5.3. Context Management ................................ 14
+   6. Security Considerations ................................ 15
+   7. Implementation Notes ................................... 18
+   8. IANA Considerations .................................... 20
+   9. References ............................................. 20
+      9.1. Normative References .............................. 21
+      9.2. Informative References ............................ 22
+   10. Acknowledgments ....................................... 23
+
+1. Introduction
+
+   Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP) is an
+   experimental protocol that combines quantum cryptography and 
+   machine-learning-based semantic compression to achieve efficient, 
+   secure communication. QASWP is designed for scenarios where both 
+   high security (including post-quantum security) and bandwidth 
+   efficiency are desired, such as future quantum internet applications 
+   or AI-driven device communications.
+
+   The key features of QASWP are:
+   - **Quantum key exchange for authentication and confidentiality**: 
+     The protocol utilizes a quantum channel (e.g., entangled photon 
+     pairs) to generate shared secret keys and to verify the absence of 
+     man-in-the-middle attackers. These keys seed classical cryptographic 
+     operations, providing forward security and resistance to quantum 
+     computing attacks.
+   - **Neural semantic compression**: QASWP endpoints share a pretrained 
+     neural network model that can compress and decompress messages by 
+     focusing on their semantic content. By sharing context, endpoints 
+     only transmit information that is new or unpredictable to the other 
+     side, reducing message size.
+   - **Context synchronization**: Both parties maintain a synchronized 
+     context state (e.g., conversation history or shared knowledge) that 
+     evolves as messages are exchanged. A novel mechanism uses quantum 
+     shared randomness to help keep this context aligned.
+   - **Integrated verification**: Optionally, QASWP includes a step for 
+     exchanging zero-knowledge proofs to assure each party that the 
+     other is using an authentic, unmodified compression model and 
+     following the protocol correctly, without revealing private details.
+
+   This document specifies QASWP in an RFC-style format. Section 3 
+   provides an overview of how the protocol operates. Section 4 
+   specifies the handshake phase in detail, including message flows 
+   and fields. Section 5 covers the data transfer phase, defining the 
+   message format and compression process. Section 6 discusses security 
+   considerations, examining how QASWP defends against various threats. 
+   Section 7 provides implementation guidance and notes on practical 
+   deployment. Finally, Section 8 and 9 address IANA considerations and 
+   references, respectively.
+
+   The reader is expected to be familiar with basic cryptographic 
+   concepts (encryption, digital signatures, etc.) and with the notion 
+   of quantum key distribution. Familiarity with semantic communication 
+   or neural network compression is beneficial but not strictly required 
+   to implement the protocol as specified.
+
+2. Terminology
+
+   **Quantum Channel**: A communication channel capable of transmitting 
+   quantum states (qubits). In QASWP, the quantum channel is used to 
+   share entangled qubits or quantum bits between the two parties. This 
+   channel is assumed to be point-to-point (no intermediate eavesdropper 
+   can measure without detection).
+
+   **Classical Channel**: A traditional data channel (e.g., TCP/IP 
+   connection) used to exchange classical messages (bits). The classical 
+   channel in QASWP will be encrypted and authenticated once the session 
+   is established.
+
+   **Endpoint / Party**: One side of a QASWP communication session. We 
+   often refer to endpoints as Alice (initiator/client) and Bob 
+   (responder/server) for clarity.
+
+   **Session**: A single instance of the QASWP protocol execution, from 
+   handshake initiation to termination. A session is associated with 
+   certain negotiated parameters (like cryptographic keys and model 
+   context).
+
+   **Context**: The shared state or knowledge between endpoints that is 
+   used for semantic compression. Context may include past messages, 
+   environment knowledge, or the internal state of the compression model 
+   that both parties update in tandem.
+
+   **Semantic Model**: A machine learning model (e.g., a neural network) 
+   that both endpoints use to encode (compress) and decode (decompress) 
+   messages. This model essentially defines a "language" or encoding 
+   scheme based on semantics.
+
+   **Compression Engine**: The component/procedure that applies the 
+   semantic model to produce compressed data from a message or to 
+   reconstruct a message from compressed data.
+
+   **Quantum Key Exchange (QKE)**: The process by which two parties 
+   use a quantum channel to obtain a shared secret key. QKE in QASWP 
+   typically refers to the generation of a raw key via entangled qubits 
+   and subsequent classical post-processing (error correction and 
+   privacy amplification).
+
+   **Post-Quantum (PQ) Cryptography**: Classical cryptographic 
+   algorithms believed to be secure against quantum adversaries (e.g., 
+   lattice-based encryption, hash-based signatures). QASWP uses PQ 
+   algorithms for authentication and as a fallback key agreement.
+
+   **Zero-Knowledge Proof (ZKP)**: A cryptographic proof that allows one 
+   party to convince another that a certain statement is true, without 
+   revealing anything other than the truth of the statement. In QASWP, 
+   a specific form called zk-SNARK (Succinct Non-interactive 
+   Zero-Knowledge Argument) may be used to prove correctness of model 
+   use or computations.
+
+   **MAC (Message Authentication Code)**: A short piece of information 
+   (tag) that verifies the integrity and authenticity of a message, 
+   generated using a secret key.
+
+   **AEAD (Authenticated Encryption with Associated Data)**: An 
+   encryption method that provides confidentiality and integrity 
+   simultaneously. E.g., AES-GCM. QASWP uses AEAD to secure message 
+   payloads on the classical channel.
+
+   **I-Frame / P-Frame (conceptual)**: Borrowed from video compression 
+   terminology for understanding context resets, an "I-frame" would be 
+   an independent message needing no prior context, whereas a "P-frame" 
+   uses previous context. In QASWP, most messages are like P-frames 
+   (context-dependent), with occasional context resets akin to I-frames.
+
+3. Protocol Overview
+
+   QASWP operates in two phases: the Handshake Phase and the Data 
+   Transfer Phase.
+
+   **Handshake Phase**: 
+   The handshake establishes a secure context for communication:
+   - The peers first perform a Quantum Key Exchange (QKE) by sending 
+     and measuring entangled quantum bits. This yields a shared random 
+     secret and ensures no eavesdropper is present (if the quantum 
+     transmission is undisturbed).
+   - Using the output of QKE, the peers engage in a classical exchange 
+     to derive final session keys and authenticate each other. This 
+     involves:
+       * Exchanging protocol version and capabilities (including which 
+         semantic model to use for compression).
+       * Optionally exchanging certificates or identifiers and using a 
+         post-quantum digital signature or a pre-shared key for entity 
+         authentication.
+       * Deriving encryption keys from the quantum secret and possibly 
+         a parallel post-quantum key agreement (hybrid approach).
+       * Optionally exchanging zero-knowledge proofs to attest to the 
+         correctness of their semantic model or software.
+       * Confirming that both parties have arrived at the same session 
+         keys (via a key confirmation MAC).
+
+   If any step of the handshake fails (e.g., verification checks fail or 
+   an expected proof is invalid), the session is aborted. On success, 
+   both sides hold:
+   - A shared session encryption key (and related keys for MAC if 
+     separate).
+   - A synchronized initial context for the semantic model (this could 
+     be just an "empty" context or include some agreed baseline knowledge).
+   - Assurance of the peer's identity (if applicable) and that both are 
+     in possession of the agreed model and keys.
+
+   The handshake is designed to be complete in a few round trips. The 
+   inclusion of quantum exchange means an out-of-band process (entangled 
+   photon transmission) precedes or runs in parallel to the first 
+   classical messages.
+
+   **Data Transfer Phase**:
+   Once the handshake is done, the parties can send application data 
+   securely. When sending a message:
+   - The sender takes the message and inputs it into the Compression 
+     Engine along with the current context. The engine produces a 
+     compressed representation (a sequence of bits) which is typically 
+     much smaller than the original message.
+   - The sender encrypts this compressed payload using the session key 
+     (via an AEAD cipher). A header (including sequence number, etc.) 
+     is attached in plaintext or in the AAD, and an auth tag is 
+     generated.
+   - The receiver, upon getting the encrypted packet, checks the auth 
+     tag and decrypts it, recovering the compressed payload.
+   - The receiver feeds the compressed payload into its Compression 
+     Engine with its context, obtaining the reconstructed message.
+   - Both sender and receiver update their context state based on the 
+     message (so that future messages can be interpreted relative to 
+     this one).
+
+   In effect, each message transmitted with QASWP is not standalone; it 
+   is woven into the semantic context that both sides share and update.
+
+   Additionally, QASWP may utilize periodic quantum signals or other 
+   sync methods to ensure context alignment (for example, injecting a 
+   known marker or resetting context after a certain number of messages 
+   if drift is a concern).
+
+   The Data Transfer continues until one or both parties decide to 
+   terminate the session. A session can be terminated gracefully with a 
+   closure alert (ensuring all remaining data and acknowledgments are 
+   flushed), or abruptly if an error is detected.
+
+   Throughout data transfer, security of each packet is maintained by 
+   the encryption/MAC, and the context ensures that even if packets are 
+   observed, they are not intelligible without the model and context 
+   state (which are private). Also, if an adversary tries to inject or 
+   modify packets, the decryption/MAC verification will fail, and the 
+   protocol should drop those packets (or abort if a serious breach is 
+   detected).
+
+   QASWP does not itself guarantee reliable delivery (that is typically 
+   handled by an underlying transport like TCP or by an application 
+   layer). However, because the semantic encoding relies on sequence and 
+   context, it is generally expected to run on a reliable, ordered 
+   channel. If using an unordered or lossy transport (like UDP), an 
+   additional reliability mechanism or restricting QASWP to idempotent 
+   messages would be necessary.
+
+   In summary, QASWP aims to achieve a secure channel similar to TLS 
+   (protecting confidentiality and integrity) while drastically reducing 
+   the volume of data exchanged by leveraging shared AI understanding 
+   between the endpoints. The quantum aspect ensures the security 
+   cannot be retroactively broken by quantum adversaries, and the 
+   semantic aspect aligns with an AI-native approach to communication.
+
+4. Handshake Procedure
+
+   In this section, we define the handshake messages and steps for QASWP.
+
+   The handshake can be conceptually divided into sub-phases:
+   1. Quantum Key Exchange (entangled qubit distribution and key 
+      generation).
+   2. Classical Hello exchange (parameters and identities).
+   3. Classical key confirmation and proof exchange.
+   4. Handshake completion (ready to send data).
+
+   The exact message flow is as follows:
+
+   ```
+   (Quantum) : [ Entangled qubits sent and measured by both parties ]
+   Alice -> Bob: QASWP-ClientHello (classical)
+   Bob   -> Alice: QASWP-ServerHello (classical)
+   Bob   -> Alice: QASWP-ServerFinished (classical)
+   Alice -> Bob: QASWP-ClientFinished (classical)
+   ```
+
+   Optionally, the ServerHello or a subsequent handshake message may 
+   carry proof data requiring an additional round trip (this is left 
+   flexible in case the proof is large and needs to be segmented).
+
+   Below we describe each part in detail:
+
+#### 4.1. Quantum Key Exchange
+
+   Before or during the ClientHello/ServerHello exchange, Alice and Bob 
+   perform a quantum key exchange. This is not encapsulated in a TCP/IP 
+   message but occurs via a separate quantum communication process:
+   - Alice and Bob establish a quantum link (through whatever means 
+     their network provides; this specification does not dictate how 
+     the quantum link is set up, only what is done with it).
+   - Over this link, they either run a QKD protocol like BB84 or use 
+     entangled pairs. In either case, they obtain a raw sequence of 
+     bits. They then perform classical post-processing (error 
+     correction and privacy amplification) over an authenticated channel.
+     *Note:* Initially, there is no authenticated channel, which is a 
+     circular dependency. In practice, QKD implementations use a small 
+     pre-shared key or a public-key signature to authenticate this 
+     phase. QASWP assumes a mechanism exists to authenticate the QKD 
+     classical communication (which could be as simple as each device 
+     having the other's public identity key from a certificate or a 
+     short pre-shared secret).
+   - The result of QKD is a shared key K_q (256 bits, for example). If 
+     QKD fails (due to line disturbance or attack), the handshake 
+     cannot proceed under quantum security mode. The protocol may 
+     either abort or fall back to a purely classical key exchange 
+     (depending on configuration and policy).
+
+   Once K_q is established, both parties will feed it into a key 
+   derivation function (KDF) along with transcript info. This yields 
+   sub-keys for use in the next steps:
+   - K_auth = a key for authenticating handshake messages (HMAC, etc).
+   - K_seed = a key used as an input to the post-quantum KEM (if doing 
+     hybrid, maybe used to encrypt a PQ key).
+   - K_ctx  = seed for context synchronization (could be used to derive 
+     initial random context values or initial model state tweaks).
+   - etc., as needed. All derivations should be from a cryptographic 
+     hash function (e.g., KDF(key=K_q, label="auth", transcript)).
+
+#### 4.2. Classical Authentication and Key Confirmation
+
+   Once quantum key exchange is done (or in parallel), the classical 
+   handshake messages are exchanged:
+
+   **QASWP-ClientHello**: 
+   This is the first classical message from Alice to Bob.
+   It contains:
+   - Protocol version and a list of supported options (e.g., supported 
+     cipher suites, model IDs, proof algorithms).
+   - A random nonce (to prevent replay).
+   - Alice's public identity info:
+       * If using certificates: Alice's X.509 certificate (which includes 
+         her public signature key and identity).
+       * If using raw public keys or preshared identities: an identifier 
+         and the public key, or just an identifier if a PSK is known.
+   - A commitment or identifier for the semantic model Alice proposes 
+     to use. This could be a hash of the model parameters or a well-known 
+     model ID (if models are standardized).
+   - (Optionally) A zk-proof or a placeholder for it. If Alice needs to 
+     send a proof at handshake, she might include it here if it's ready 
+     (or in a later message).
+   - A digital signature covering the important parts of this ClientHello 
+     (like the nonce, offered parameters, model ID, etc.), signed with 
+     Alice's private identity key. The signature may be a post-quantum 
+     scheme (preferred) or a hybrid signature that includes both a 
+     classical and PQ signature for transition safety.
+   - A MAC (e.g., HMAC) using K_auth (from quantum) over the whole 
+     message (to authenticate it at the bit level). This binds the 
+     quantum key to this message.
+
+   The ClientHello thus provides Bob with Alice's identity and her 
+   capabilities, and gives Bob assurance (via MAC with K_auth) that 
+   Alice truly has the quantum key. The signature gives identity 
+   authentication (if Bob trusts the certificate or PSK arrangement).
+
+   **QASWP-ServerHello**: 
+   Bob replies with his own data:
+   - Protocol version and selection of options (which cipher suite, 
+     which model ID to use from Alice's list, etc.).
+   - Bob's nonce.
+   - Bob's identity info (certificate or identifier) similar to Alice's.
+   - A commitment or identifier for the model (should match Alice's or 
+     be chosen from her proposals; if not, it indicates a negotiation 
+     result).
+   - (Optional) Bob's zk-proof or placeholder for it, if applicable.
+   - Bob's digital signature covering both Alice's and Bob's nonces and 
+     the handshake transcripts up to this point (to prevent tampering 
+     or parameter injection). Again, a PQ signature algorithm is used.
+   - A MAC using K_auth over the message (to ensure integrity with 
+     respect to the quantum-derived key).
+
+   At this stage, both sides have exchanged identities and preferences, 
+   and know each other's public keys and model choices. They also both 
+   have K_q (quantum key) and have verified the presence of the MACs, 
+   meaning the quantum key was used, hence no MITM on the quantum leg.
+
+   They now likely perform a **key agreement** to get a final session 
+   key:
+   - If using a post-quantum KEM (e.g., Kyber): Alice might have included 
+     a PQ public key in her ClientHello. Bob now includes the KEM 
+     ciphertext in his ServerHello (which encapsulates a random key 
+     K_pq). Alice will decapsulate it to get K_pq. Now both have K_pq.
+   - If using Diffie-Hellman (classical or PQ): could be similar, but 
+     since we already have quantum key, a Diffie-Hellman is optional or 
+     purely for fallback.
+   - If using only quantum: they might skip additional key exchange 
+     and just use K_q.
+
+   In any case, by end of ServerHello, both sides derive the final 
+   session secrets:
+   - Master Secret = f(K_q, K_pq, transcripts) via a secure KDF.
+   - From Master Secret, derive session encryption key, session MAC key, 
+     etc., using a PRF.
+
+   After sending ServerHello, Bob can also send **ServerFinished** 
+   immediately (to save a round trip):
+   - ServerFinished contains a short value (e.g., 32-bit or 256-bit) 
+     that is a verification tag (like a MAC or hash) over the entire 
+     handshake so far, keyed with the new session key. For example, 
+     an HMAC of all handshake messages using a key derived from Master 
+     Secret (this is analogous to TLS Finished message).
+   - This assures Alice that Bob derived the same Master Secret and 
+     that everything is in order.
+
+   Alice, upon receiving ServerHello and ServerFinished, will verify:
+   - Bob's signature (to authenticate identity).
+   - Bob's MAC (to ensure integrity and that Bob had K_q).
+   - The PQ KEM decapsulation (to get K_pq, if used).
+   - Compute Master Secret and verify the ServerFinished tag.
+   If all checks out, Alice considers the handshake almost complete.
+
+   Alice then sends **ClientFinished**:
+   - Similar to ServerFinished, a tag over the handshake (including 
+     ServerFinished) keyed with Master Secret, proving that she also 
+     has the keys and that the handshake is complete on her side.
+   - This is the final confirmation. After sending this, Alice can send 
+     encrypted data; Bob, upon receiving it and verifying, can also 
+     send data.
+
+#### 4.3. Model Negotiation and Verification
+
+   Negotiating the semantic model is a unique aspect of QASWP:
+   - The ClientHello lists one or more model identifiers or versions 
+     that Alice supports (and has the model files for).
+   - The ServerHello picks one of those (or responds with an error/no 
+     common model if none match). All further communication will assume 
+     that model.
+   - Each model ID corresponds to a known architecture and possibly 
+     parameter set. The endpoints must ensure they actually have the 
+     same parameters. If the models are standardized (e.g., "Model 
+     X v1.2" means a fixed weight set), then just agreeing on the ID 
+     is enough.
+   - If models can be custom or trained per user, then a hash or 
+     fingerprint of the model's parameters should be exchanged. For 
+     example, Alice could send H(M) of her model weights, Bob checks 
+     against H(M) of his model weights for that ID. If they differ, 
+     they do not actually have the same model and the session should 
+     abort or fall back (this protocol assumes identical models are 
+     present; it doesn't handle on-the-fly model transfer, which would 
+     be too heavy to do in handshake).
+
+   The verification via zero-knowledge proof:
+   - If required (perhaps in high security mode), Alice and Bob exchange 
+     proofs that the model they claim to use is indeed the one they 
+     have loaded, and/or that they follow the protocol. The details of 
+     such proofs are beyond the scope of this spec, but generally:
+       * The proof could show the knowledge of the model's weights 
+         corresponding to the hash they provided (without revealing 
+         them).
+       * Or a proof that a sample input run through their encoder 
+         produces a certain output (proving correct functioning).
+     - These proofs, if used, might be attached to ClientHello and 
+       ServerHello, or might be sent in separate messages if large.
+     - The protocol should allow for a "Proof" message if needed:
+         Alice -> Bob: QASWP-ClientProof
+         Bob -> Alice: QASWP-ServerProof (or combined with Finished)
+     - If proofs fail verification, the handshake fails.
+
+   In summary, by the end of the handshake, both parties have:
+   - Authenticated each other (using quantum and PQ methods).
+   - Agreed on a symmetric encryption key and context for communication.
+   - Agreed on and verified a semantic model to use for compression.
+   - (Optional) Verified via proofs that the other side is honest in 
+     the above.
+
+   Now the secure channel is ready for use.
+
+5. Data Transfer Phase
+
+   After a successful handshake, all further messages in the session 
+   are encrypted and encoded according to QASWP data format. This section 
+   describes how application data is handled in QASWP.
+
+#### 5.1. Message Encoding and Compression
+
+   Each plaintext message to be sent through QASWP (which could be an 
+   application-layer message like a JSON payload, a chat message, sensor 
+   reading, etc.) undergoes the semantic compression process:
+   - **Input**: plaintext message `M` and the current context `C` (which 
+     both sender and receiver share from previous interactions).
+   - **Encoding**: The sender's CompressionEngine uses the agreed model 
+     to encode `M` in context `C`, yielding compressed data `Z`. This 
+     may be a binary string of variable length.
+   - **Output**: `Z` is the encoded form of `M`. The context state is 
+     then updated: `C_new = update(C, M)`. The sender will now consider 
+     `C_new` as the context for future messages.
+
+   On the receiving side:
+   - The receiver knows the context `C` corresponding to all messages 
+     prior to this one (initially the context from handshake, then 
+     updated as each message comes in).
+   - **Decoding**: The receiver's CompressionEngine takes `Z` and `C` 
+     and decodes to reconstruct `M'` (the receiver's estimate of the 
+     original message). Ideally, `M'` equals `M` if the model and context 
+     are perfectly synchronized and the channel introduced no errors. 
+     Minor differences could occur if the model is lossy or approximate, 
+     but for most textual/data communications, it should be exact or 
+     acceptably close.
+   - The receiver updates its context: `C_new = update(C, M')`. Because 
+     `M'` should equal `M` semantically, the context remains aligned 
+     with the sender's new context.
+
+   **Context Update Mechanics**:
+   - For deterministic contexts (like conversation history), both sides 
+     appending the message to the history naturally syncs context.
+   - For neural network state, e.g., if using an RNN, both sides feeding 
+     `M` into the RNN yields the same new hidden state.
+   - If the model uses randomness (like dropout or sampling), QASWP 
+     ensures determinism by either using fixed random seeds or the 
+     quantum-synced random bits as common entropy so both do the same 
+     thing.
+   - The protocol may incorporate an explicit context identifier or 
+     version number in each packet, so the receiver knows if it is 
+     decoding with the correct context. For instance, a context 
+     version could be simply a message sequence number if each message 
+     updates context sequentially.
+
+   **Error Handling**:
+   - If decryption fails (bad auth tag), the packet is discarded and 
+     considered an attack or corruption. The session might be terminated 
+     depending on severity.
+   - If decryption succeeds but the receiver cannot decode `Z` (e.g., 
+     if `Z` is malformed or if context was wrong), the receiver should 
+     request a resynchronization. This can be done by sending a special 
+     control message indicating context reset needed. One strategy is 
+     to reinitialize context to a checkpoint or ask the sender to resend 
+     something in uncompressed form. These details are policy-specific 
+     and not fixed by the protocol, but a simple approach is:
+       * If decoding fails, abort the session (as it's likely out-of-sync 
+         or an attack).
+       * Alternatively, have a "fall back to raw" flag: the sender can 
+         re-send the last message without compression if it suspects 
+         the receiver got out of sync.
+
+#### 5.2. Packet Format
+
+   QASWP data packets (after handshake) have a specific format sent 
+   over the classical channel. We define the format in an abstract 
+   sense (actual implementation could be binary or JSON, etc., but 
+   ideally binary for compactness):
+
+   ```
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Seq Number (32 bits)          | Flags (8)     |  Context ID   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Ciphertext Length (16 bits)   | 
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-------------------------------
+   | Encrypted Payload (variable length)                         ...
+   +---------------------------------------------------------------+
+   | Authentication Tag (e.g., 16 bytes for GCM)                 ...
+   +---------------------------------------------------------------+
+   ```
+
+   The above is one possible representation:
+   - **Sequence Number**: A 32-bit monotonically increasing counter for 
+     each packet. This ensures packets can be ordered and prevents 
+     replay. This can also double as the context version if each message 
+     corresponds to one update.
+   - **Flags**: 8 bits for control flags. Defined flags might include:
+       * 0x01 = "Context reset" (indicates this packet's payload is 
+         encoded with a reset or fresh context, like an I-frame).
+       * 0x02 = "Proof attached" (indicates after the tag, a proof 
+         structure follows).
+       * 0x04 = "Ack required" or other QoS indicators as needed.
+       * Others are reserved.
+   - **Context ID**: 8 bits to identify which context or model is used 
+     if multiple might be in use (e.g., if in one session, two contexts 
+     are interleaved, or if different flows use different models). In 
+     normal usage, this can be 0 if there's only one context. It can 
+     also help with re-sync: if a context reset is sent, increment the 
+     context ID so that old out-of-sync messages are ignored.
+   - **Ciphertext Length**: 16-bit indicating how long the encrypted 
+     payload is. If the payload is large, multiple packets might be 
+     used or a higher bitsize could be chosen (but semantic payloads 
+     are usually small).
+   - **Encrypted Payload**: This is the encryption of the compressed 
+     data `Z`. Encryption is done using an AEAD cipher with the session 
+     key. The associated data (which is not encrypted but authenticated) 
+     should include the header fields (Seq, Flags, Context ID, length) 
+     so that any tampering there is detected by tag verification.
+   - **Authentication Tag**: Output of the AEAD cipher (e.g., 128-bit 
+     tag for AES-256-GCM). Verifies both header and payload.
+
+   The packet is transmitted over the existing classical channel (which 
+   could be a TCP socket, WebSocket, etc., depending on implementation). 
+   Since QASWP might run on top of an ordered transport, SeqNumber 
+   duplication checks are mostly for security (replay prevention). If 
+   using an unordered transport (not typical), Seq helps reorder.
+
+   The receiving side on getting a packet will:
+   - Check Seq Number is as expected (e.g., either exactly one more than 
+     last seen or in a window if parallel flows).
+   - Use the correct context state corresponding to the Context ID and 
+     current state to attempt decryption.
+   - Decrypt with AEAD, verify tag using the session key and associated 
+     data.
+   - If decryption fails or tag mismatch, discard (and possibly record 
+     an error). Potentially, after a certain number of failures, abort 
+     session (assuming an attack or irrecoverable desync).
+   - If decrypt ok, retrieve `Z` (compressed data).
+   - Determine which context to use for decoding `Z` (based on Context 
+     ID and possibly the Flags if it’s a reset).
+   - Decode `Z` to `M'`.
+   - Update context (for that Context ID).
+
+   Note: The concept of multiple contexts or context ID is included for 
+   extensibility. A simple implementation can always use a single 
+   context (ID = 0 for all messages). Multi-context might be used if, 
+   for example, two independent data streams in one session each keep 
+   their own semantic context (like two conversation topics).
+
+   If the "Proof attached" flag is set, it means after the Auth Tag, 
+   there is additional data in the packet carrying a proof (likely 
+   unencrypted or separately handled). This is a special case for 
+   sending zk-SNARK proofs mid-session if needed. The format of that 
+   proof data would be defined when needed; presumably it includes a 
+   length and the proof bytes. The receiver would parse the proof after 
+   verifying the main packet, then verify the proof itself using the 
+   appropriate verification key or circuit.
+
+#### 5.3. Context Management
+
+   Context consistency is vital for QASWP effectiveness. The protocol 
+   includes measures to maintain and, if needed, restore context sync:
+   - Each side tracks the context state associated with the last 
+     processed message (or each context ID separately).
+   - The handshake established an initial context (likely empty or a 
+     known baseline).
+   - As each message is processed, the context evolves deterministically 
+     for both parties.
+
+   Potential causes of context drift:
+   - Message loss (shouldn't happen on reliable transport, but if it 
+     does, the receiver might miss an update).
+   - Message reordering (again unlikely if ordered, but out-of-order 
+     processing could desync if context is applied in wrong order).
+   - A decoding error or discrepancy in model state (if an edge case 
+     or numerical issue made the model produce slightly different 
+     results on the two sides, though we try to avoid that by design).
+
+   **Context Reset Mechanism**:
+   QASWP can perform a context reset by transmitting an "I-frame" style 
+   message. This would typically be indicated by the Flags in a packet:
+   when the "Context reset" flag is 1, it means the payload of that 
+   packet is encoded without reliance on prior context (or with a very 
+   minimal baseline context). Essentially, the sender reinitializes 
+   their compression model (or uses a fresh instance) for that message. 
+   The receiver will do the same before decoding it. After that message, 
+   both will continue from the new state.
+
+   When to reset:
+   - After a certain number of messages or when context might be 
+     saturating or no longer providing benefit.
+   - When a possible sync issue is detected (like a missed message).
+   - Or periodically, just as a safeguard (e.g., every 1000 messages or 
+     when a new conversation topic starts).
+
+   Resets help bound the damage if context gets out of sync — you 
+   won't be lost forever; a reset realigns things.
+
+   **Quantum context sync**:
+   If the protocol is configured to use quantum-assisted context 
+   sync, at intervals the endpoints derive some fresh random data from 
+   new entangled qubits and feed that into the context. Practically:
+   - Suppose every N messages, they perform a quick QKE of a few bits 
+     (or repurpose some of the ongoing QKD key stream).
+   - They get a common random value R.
+   - They both use R as a seed to perturb the model's state slightly 
+     in a known way (like resetting the model's random generator seed 
+     to R, or shuffling some internal representation).
+   - An attacker who is only on the classical channel does not know R 
+     and thus cannot predict this context change or forge messages 
+     around it.
+   - This further hardens against any adversary trying to exploit 
+     patterns; it also ensures that if contexts were diverging due to 
+     numerical issues, they are snapped back to a common reference 
+     regularly.
+
+   **Acknowledge and Flow Control**:
+   QASWP does not inherently require acknowledgments at the protocol 
+   level (assuming underlying transport is reliable). However, 
+   implementations might use them for application logic or for 
+   measuring context sync (e.g., a simple ACK message like "got seq X" 
+   could help double-check both sides are aligned; these could be at 
+   application layer).
+   If using an unreliable transport, explicit ACK packets would be 
+   needed to implement retransmissions (but that essentially reimplements 
+   a reliability layer, which is beyond QASWP's scope).
+
+   **Maximum context length**:
+   In some cases, the model might have limits (like context window for 
+   a transformer). If context grows too long (too many past messages), 
+   the protocol should either:
+   - Drop off older context data (e.g., only keep last K messages).
+   - Or compress/summarize context (like combine older messages into 
+     a summary stored in context).
+   The specifics depend on the model. The protocol doesn't fix this, 
+   but implementers should be aware to avoid unbounded memory growth.
+
+   Finally, if a serious unrecoverable error happens (keys mismatch, 
+   context irreparably wrong), the parties should terminate the session 
+   and possibly start a new handshake if they want to continue, rather 
+   than continue with bad state.
+
+6. Security Considerations
+
+   This section analyzes QASWP's security properties and potential 
+   vulnerabilities.
+
+   **Confidentiality**: 
+   All user messages are encrypted with strong symmetric encryption 
+   (AES-256-GCM or equivalent). The keys for encryption are derived 
+   from a combination of quantum and post-quantum processes, so an 
+   attacker would need to break both quantum key distribution and 
+   the chosen classical algorithms to recover plaintext. The semantic 
+   compression adds an additional obscurity layer: even if an attacker 
+   got the compressed bits (without keys), interpreting them requires 
+   knowing the exact model and context. That said, we do not treat 
+   compression as a security measure by itself (since through known 
+   plaintext attacks, an attacker might guess content if they somehow 
+   recognized patterns), so we rely on encryption as the primary 
+   confidentiality guarantee.
+
+   **Integrity and Authenticity**:
+   QASWP uses authentication at multiple layers:
+   - The handshake messages are authenticated via digital signatures 
+     (for identity) and via HMAC tags derived from the quantum key 
+     (to ensure no alteration).
+   - Each data packet has an AEAD tag to detect tampering or forgery.
+   If a packet is modified or injected by an attacker, the receiver 
+   will reject it due to tag mismatch. Sequence numbers also help 
+   detect replay or reordering attacks.
+
+   **Authentication of parties**:
+   During handshake, assuming the certificates or pre-shared keys are 
+   properly managed, each party verifies the other's identity. The 
+   quantum exchange assures that the person you're handshaking with is 
+   indeed directly connected (no MITM) because if it were not the real 
+   Bob, the quantum test would fail (or the classical MAC using K_q 
+   would fail if MITM didn't have K_q). Therefore, QASWP achieves mutual 
+   authentication analogous to a TLS full handshake, but with the added 
+   trust that the keys come from quantum measurements only the genuine 
+   endpoints could produce.
+
+   **Post-Quantum Security**:
+   All cryptographic components are chosen to be quantum-resistant:
+   - Symmetric 256-bit keys (safe from Grover's algorithm which at 
+     best gives sqrt speedup).
+   - Lattice-based or hash-based signatures that are not known to be 
+     breakable by quantum.
+   - Optionally lattice-based key exchange (Kyber) in addition to the 
+     quantum keys.
+   Even if an attacker records the entire session now, they should not 
+   be able to decrypt it in the future, because they would need the 
+   one-time pad-like quantum key which they could not have obtained 
+   without detection, and/or break the lattice crypto.
+
+   **Forward Secrecy**:
+   QASWP provides forward secrecy in that the session keys are derived 
+   from ephemeral quantum outcomes (and optionally ephemeral PQ 
+   exchange). If long-term keys (like identity keys) are compromised 
+   later, past session content remains safe. The quantum key is used 
+   immediately and then not stored; even if someone somehow got a hold 
+   of the classical transcript and your identity keys, they couldn't 
+   derive the session key without the quantum bits.
+
+   **Key Compromise Implications**:
+   - If the quantum key K_q is somehow exposed (which would imply one 
+     endpoint was compromised since an eavesdropper can't get it 
+     undetected), the attacker could impersonate or decrypt that 
+     session. But since there's a new quantum exchange each session, 
+     compromise doesn't affect future sessions.
+   - If a party's long-term private key (for signatures) is stolen, 
+     the attacker could impersonate that party in future handshakes. 
+     This is mitigated if that party's certificate can be revoked or 
+     by using short-lived keys. Also, the attacker still can't break 
+     past sessions because they lack those sessions' K_q and K_session.
+   - If the model information is stolen, an attacker might guess what 
+     messages might look like if they intercept encrypted payloads and 
+     brute-force some possibilities through the model. However, without 
+     the key to decrypt, they just have ciphertext. Even with ciphertext, 
+     trying to guess plaintext by model inversion is extremely hard 
+     (they would have to guess both context and message correctly and 
+     still wouldn't verify without the tag). So model theft alone 
+     doesn't break confidentiality, though it could help an attacker 
+     craft confusing messages if they ever got a foothold to inject 
+     plaintext (but they'd still fail the MAC if not a full MITM).
+
+   **Resilience to MITM**:
+   The combination of quantum eavesdropping detection and classical 
+   authentication makes QASWP robust against man-in-the-middle:
+   - If a MITM tries to intercept the quantum exchange, the QBER 
+     (quantum bit error rate) will spike and the key will be aborted.
+   - If a MITM somehow let the quantum through but then intercepted 
+     the classical (which implies they also have K_q, not possible 
+     without detection), they'd still have to forge signatures or 
+     proofs to impersonate Alice and Bob to each other, which would 
+     fail if the real keys are known to each side.
+   - The handshake MACs ensure the MITM can't modify handshake parameters 
+     (like downgrading algorithms or changing model ID) without detection.
+
+   **Side-channels and Metadata**:
+   QASWP's semantic compression potentially leaks some metadata: for 
+   instance, the length of the compressed payload might give hints 
+   about the content (a very short payload could indicate a predictable 
+   message, etc.). An attacker might guess that if every night the 
+   compressed message is 5 bytes long, perhaps it's the same routine 
+   status update. To mitigate this, padding can be used. The protocol 
+   can allow some padding in the plaintext before compression or in 
+   the ciphertext to normalize lengths. However, padding affects 
+   compression efficiency. Implementation can choose to pad all messages 
+   to a fixed length bucket if that is a concern.
+
+   Another potential issue is the model could be susceptible to 
+   adversarial inputs (like adversarial examples in ML) or information 
+   leakage. For example, if the model is poorly designed, maybe an 
+   attacker could craft a context and message that cause the model to 
+   output a known pattern in `Z` that they can recognize even without 
+   keys. We assume the model is not publicly known to the attacker 
+   (or even if architecture is known, the weights are secret), and that 
+   it doesn't have trivial output patterns. Nonetheless, one should 
+   evaluate models for such side channels. In high security cases, 
+   layering standard compression or encryption might be advisable if 
+   there's doubt (though we already encrypt after compression, which 
+   should hide any such patterns anyway).
+
+   **Denial of Service (DoS)**:
+   The protocol has some expensive steps an attacker could exploit:
+   - Quantum exchange: an attacker could bombard the quantum channel 
+     or try to cause high error rates, forcing repeated retries. This 
+     could degrade the system or waste resources. To mitigate, systems 
+     will likely have monitoring on QBER and abort after too many fails.
+   - Proof verification: verifying zk-SNARK proofs is relatively fast, 
+     but generating them is slow. An attacker could attempt to make 
+     the honest party compute many proofs (if the protocol required 
+     responding to proof requests). In QASWP, proofs are mainly in 
+     handshake and possibly occasional, so not an interactive DoS 
+     vector per se. But this is something to watch: e.g., not allowing 
+     an unauthenticated user to trigger heavy proof generation.
+   - Large messages or contexts might be used to exhaust memory. QASWP 
+     can mitigate by setting limits on message size and context length, 
+     and by using streaming if big data must be sent (though sending 
+     large raw data defeats semantic compression benefits; QASWP is 
+     better for message-oriented data).
+   - The handshake itself requires some computation (signatures, KEM 
+     decaps). If an attacker initiates many handshakes and drops them, 
+     it could cause load. Rate limiting or puzzles can be applied at 
+     a higher level if needed.
+
+   **Quantum-specific attacks**:
+   One must consider that the security of the quantum channel is 
+   hardware-dependent. E.g., an attacker might exploit device 
+   vulnerabilities (detector blinding attacks in QKD hardware, etc.). 
+   Those are outside the protocol spec's scope but implementers need to 
+   use quantum hardware that has countermeasures for known issues and 
+   follow QKD standards (like ITU-T recommendations for QKD security).
+
+   **Privacy**:
+   QASWP by itself doesn’t incorporate anonymity or traffic analysis 
+   resistance beyond encryption. Identities are revealed in handshake 
+   (certificates). If anonymity is needed, one could integrate QASWP 
+   with an anonymity network or use pseudonymous keys. The semantic 
+   compression might actually reduce distinguishability of traffic 
+   (since everything is encoded to what looks like pseudorandom bits 
+   after encryption). All messages after handshake are uniform encrypted 
+   packets. However, an observer could still note the timings and sizes 
+   of packets. Padding and timing obfuscation would be needed for 
+   high-level traffic analysis resistance.
+
+   In summary, QASWP is designed to be **secure against passive and 
+   active attackers** who have up to full control of the classical 
+   network but (presumably) cannot undetectably interfere with the 
+   quantum channel. The combination of quantum and post-quantum methods 
+   ensures long-term confidentiality. The main security reliance is on 
+   the proper implementation of these methods and the correctness of 
+   the shared model.
+
+7. Implementation Notes
+
+   This section provides guidance for implementers regarding integration, 
+   performance tuning, and interoperability.
+
+   **Model Distribution**: 
+   Both parties need the same semantic model (neural network) in 
+   advance. This could be handled in several ways:
+   - Out-of-band: The model is installed on devices beforehand (for 
+     example, two IoT devices might each be flashed with the same 
+     compression model tailored to their application).
+   - Download during handshake: If models are versioned and relatively 
+     small, one side could send the model to the other if needed. 
+     However, many models (with weights) can be tens of megabytes, not 
+     feasible to send in a handshake. Better to have it pre-shared or 
+     referenced by an ID.
+   - Model selection: If multiple models exist for different domains 
+     (text vs. image, etc.), ensure the protocol negotiates the right 
+     one. Possibly the handshake "supported models" list should include 
+     a domain or type as well.
+
+   **Quantum Channel Integration**:
+   The implementation of QASWP will typically run on top of a classical 
+   transport (like TLS runs over TCP). The quantum channel is separate. 
+   One approach is to treat the QKD system as a black box that supplies 
+   keys. For example, the code could call into a quantum key supplier 
+   library that yields K_q and a flag indicating if the quantum 
+   transmission was clean. This decouples the specifics of quantum 
+   hardware from the rest of QASWP stack.
+   Synchronization: The quantum exchange might not be instantaneous 
+   relative to network messages. Implementation might start the QKD 
+   process and concurrently proceed with some handshake steps but 
+   cannot complete handshake until K_q is ready. This suggests a 
+   multi-threaded or event-driven design where handshake waits on 
+   quantum readiness.
+   Also consider failure modes: if quantum key generation fails (maybe 
+   due to line conditions), implementation could either fall back to 
+   classical or try again or abort according to configuration.
+
+   **Memory and State**:
+   The context state for the model should be stored and updated 
+   carefully. If multithreading, ensure no two threads send messages 
+   on the same session concurrently or else context updates might race. 
+   Probably enforce that only one message at a time is being encoded or 
+   have a queue.
+   The model itself (neural net) might use a lot of memory. If devices 
+   have limited RAM, consider using smaller models or quantized 
+   versions (8-bit weights instead of 32-bit) to trade a tiny bit of 
+   compression efficiency for memory.
+   If multiple sessions run in parallel (with different contexts each), 
+   you'll likely need separate model instances or at least separate 
+   context state per session. Sharing the same model weights is fine, 
+   but each session must track its own hidden state. 
+
+   **Performance optimizations**:
+   - Use hardware crypto: AES-GCM, SHA-3, etc. use CPU or hardware 
+     accelerators (many platforms have these).
+   - If a large portion of CPU is spent in neural model inference, 
+     consider using a machine learning accelerator or GPU if available. 
+     Some IoT devices might not have that, so then ensure the model is 
+     small. There's a balance: a bigger model compresses better (fewer 
+     bits on network) but uses more CPU.
+   - Possibly allow adjustable compression levels: e.g., a device can 
+     decide to only partially compress if it's under heavy load (like 
+     skip one step of refinement in encoding to save CPU). This could 
+     be a negotiated parameter or even dynamic (with a flag indicating 
+     "low compression mode" temporarily). The other side would need to 
+     know how to decode accordingly, so it's not trivial to change on 
+     the fly without pre definition.
+
+   **Interoperability and Versioning**:
+   QASWP is versioned (the protocol itself has a version number in 
+   ClientHello). If future versions change handshake or fields, the 
+   version negotiation should ensure only matching versions proceed.
+   If different implementations support different cipher suites or 
+   model sets, the negotiation in handshake should handle it gracefully 
+   (if no common cipher or model, they must abort with a clear error).
+   Ideally, maintain an IANA registry (see below) for QASWP cipher 
+   suites (quantum+PQ algorithm combos) and model IDs (maybe a namespace 
+   or URN for model references).
+   Because the field sizes for lengths and sequence numbers are fixed 
+   in the spec, be mindful of their limits (e.g., SeqNumber 32-bit will 
+   wrap after 4 billion messages; in a long-running session that might 
+   actually happen if sending hundreds of messages per second for years, 
+   so one should handle wrap-around or renegotiate keys before that).
+
+   **Error Handling**:
+   If something goes wrong (bad MAC, decode failure, proof invalid, etc.):
+   - The implementation should send an alert and abort the session. 
+     Perhaps define an "Alert" message type (similar to TLS Alert) with 
+     codes like BadRecordMAC, DecompressionFail, etc.
+   - Once an error is detected and an alert is sent/received, the 
+     session keys should be discarded and no further communication 
+     allowed on that session.
+   Logging: For debugging, it helps if an implementation can log whether 
+   an error was due to cryptographic failure vs model decode failure. 
+   But be careful not to reveal sensitive info in logs (like key 
+   material or plaintext).
+   - In particular, if a proof fails, log it but also consider it could 
+     be an attack (someone trying to pass a wrong proof).
+
+   **Testing**:
+   It's advisable to test QASWP components independently:
+   - Test quantum key integration with a simulator if real hardware 
+     isn't available (simulate a random key and some error rate).
+   - Test compression separately on sample data to ensure the model 
+     yields correct results and that encoding-decoding is lossless for 
+     what it needs to be.
+   - Test the entire handshake flow with various parameter choices and 
+     check that keys match, context aligns.
+   - Fuzz test the packet parsing and state machine to ensure no 
+     unexpected input can crash it or break out (especially because 
+     we've introduced a fairly complex state machine).
+   - Interop test between two independent implementations (if any) to 
+     ensure the spec is followed correctly.
+
+   **Fallback modes**:
+   If configured, QASWP can operate without a quantum channel (pure 
+   classical). This basically turns it into a TLS-like handshake using 
+   just PQ algorithms and then the same semantic layer. For testing 
+   or early deployments (where quantum links are rare), this mode 
+   might be used. But the security then relies entirely on the PQ 
+   crypto.
+   Implementations might allow a flag "quantum_required". If true and 
+   quantum is not available or fails, then session aborts. If false, 
+   it will do its best with what’s available.
+   Similarly, one could allow disabling the SNARK proof requirement 
+   for performance if both sides agree (perhaps indicated by a 
+   "Proofs: none" in handshake).
+   These toggles should be clearly logged or indicated to avoid a false 
+   sense of security (e.g., know when you're not actually using quantum 
+   keys or skipping proofs).
+
+   **Use of standard libraries**:
+   For cryptography, use established libraries (OpenSSL, libsodium, 
+   PQCrypto libs, etc.) especially for things like Dilithium, Kyber 
+   which might be tricky to implement from scratch correctly.
+   For zero-knowledge proofs, if implementing that part, one could use 
+   libraries like libsnark or zk-SNARK frameworks, but that requires 
+   setting up circuits and keys. It's complex and might be beyond many 
+   use cases initially, so an implementer could decide to omit the 
+   proof feature in a first version or use a simpler approach (like 
+   just verifying model hash by trust rather than ZKP).
+
+   **Hardware considerations**:
+   - Quantum transceivers might be external devices. The implementation 
+     might interface via an API to that hardware. Ensure this 
+     communication is secure (because if an attacker can fake being the 
+     QKD device, they'd feed known keys, etc. - unlikely scenario but 
+     just ensure authenticity of the quantum device output).
+   - If the environment is such that quantum channel is short-range 
+     (like within the same building), the implementation might skip 
+     certain heavy identity checks if physically secure. But generally 
+     it's better not to skip just in case.
+   - On constrained devices, consider if the overhead of QASWP is worth 
+     it. For very simple sensors, a tiny model might not compress much 
+     and could be overkill. QASWP shines when there's redundancy to 
+     exploit and security to enforce.
+
+8. IANA Considerations
+
+   This document defines a new protocol but does not yet specify 
+   particular IANA registries. Potentially, if QASWP were to be assigned 
+   a standard port number, an IANA assignment would be needed.
+   For example, if running directly over UDP or TCP, one might request:
+   - TCP port XXX for QASWP (this would allow easier firewall 
+     identification).
+   However, QASWP could also be used as a TLS-like mechanism on any port 
+   or as part of an application protocol, so a dedicated port is not 
+   mandatory.
+
+   Additionally, if the protocol were standardized, IANA registries 
+   could be created for:
+   - QASWP Cipher Suite IDs (each combination of quantum key method + 
+     KEM + signature + cipher could have an ID).
+   - QASWP Model IDs (if standardized models are enumerated).
+   - QASWP Named Groups or other constants.
+
+   As of this version, no codepoints are formally requested from IANA.
+
+9. References
+
+#### 9.1. Normative References
+
+   [RFC2119] Bradner, S., "Key words for use in RFCs to Indicate 
+             Requirement Levels", BCP 14, RFC 2119, March 1997.
+   [RFC9340] Tagliaferri, D., et al., "Architectural Principles for a 
+             Quantum Internet", RFC 9340, March 2023.
+
+   (Note: Additional normative references would include specifications 
+   of cryptographic algorithms like NIST PQ standards, but those are 
+   omitted for brevity.)
+
+#### 9.2. Informative References
+
+   [QKD-Myths] Ling, X., et al., "Quantum key distribution and 
+               authentication: Separating facts from myths", Amazon 
+               Science Blog, 2025.
+   [QGP]      Wang, S., "A Quantum Good Authentication Protocol", 
+               Journal of CS IAC, 2025.
+   [AI-Native6G] Ogenyi, F., et al., "AI-native 6G: integrating semantic 
+               communications...", Frontiers in Comm. and Netw., 2025.
+   [DeepSC]   Xie, H., et al., "Deep Learning Enabled Semantic 
+               Communication Systems", IEEE Trans. on Wireless Comm., 
+               2021.
+   [ZK-ML]    Maheri, M., et al., "TeleSparse: Verifiable Deep Neural 
+               Networks", PETS 2025.
+
+10. Acknowledgments
+
+   The author thanks colleagues at CPUTER Inc. and members of the QIRG 
+   for insightful discussions on integrating quantum channels with 
+   semantic communications. Portions of this work were inspired by 
+   early drafts and prototypes developed by the QASWP design team. 
+   Special thanks to Jane Doe for contributions on the zk-SNARK 
+   integration, and to Dr. Alice Bobovitch for theoretical analysis of 
+   context synchronization. Any errors or omissions are solely the 
+   author's responsibility.
