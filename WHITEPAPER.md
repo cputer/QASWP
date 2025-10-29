@@ -1,3 +1,5 @@
+> **Note (Demo Mode):** The repository contains a demo path that makes the headline claims measurable for CI. Those demo helpers are clearly marked in code and differ from a production design.
+
 Author: Nikolai Nedovodin (CPUTER Inc.)
 Contact: info@cputer.com
 Date: October 2025
