@@ -18,7 +18,7 @@ Unacceptable behavior includes:
 - Publishing others’ private information
 
 ## Enforcement
-Report incidents to **conduct@puter.example** (replace with your address). The maintainer team will
+Report incidents to **info@cputer.com**. The maintainer team will
 review and take appropriate action.
 
 ---
