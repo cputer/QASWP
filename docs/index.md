@@ -10,5 +10,5 @@ python examples/client.py
 ```
 
 ## License
-This repository is public but **not** open-source. Commercial use requires a license from **CPUTER Inc.**  
+This repository is public but **not** open-source. Commercial use requires a license from **CPUTER Inc.**
 See `LICENSE` for details.

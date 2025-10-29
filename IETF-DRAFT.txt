@@ -27,7 +27,7 @@ Abstract
 Status of This Memo
 
    This Internet-Draft is submitted to the IRTF Quantum Internet
-   Research 
+   Research
    Group (QIRG) for discussion. It is not an IETF standard and is
    published for informational purposes. The document will expire and
    may be updated or replaced by future versions. Comments are welcome.
@@ -76,7 +76,7 @@ Table of Contents
      The protocol utilizes a quantum channel (e.g., entangled photon
      pairs) to generate shared secret keys and to verify the absence of
      man-in-the-middle attackers. These keys seed classical
-     cryptographic 
+     cryptographic
      operations, providing forward security and resistance to quantum
      computing attacks.
    - **Neural semantic compression**: QASWP endpoints share a pretrained
@@ -354,19 +354,19 @@ Table of Contents
    - A random nonce (to prevent replay).
    - Alice's public identity info:
        * If using certificates: Alice's X.509 certificate (which
-       includes 
+       includes
          her public signature key and identity).
        * If using raw public keys or preshared identities: an identifier
          and the public key, or just an identifier if a PSK is known.
    - A commitment or identifier for the semantic model Alice proposes
      to use. This could be a hash of the model parameters or a
-     well-known 
+     well-known
      model ID (if models are standardized).
    - (Optionally) A zk-proof or a placeholder for it. If Alice needs to
      send a proof at handshake, she might include it here if it's ready
      (or in a later message).
    - A digital signature covering the important parts of this
-   ClientHello 
+   ClientHello
      (like the nonce, offered parameters, model ID, etc.), signed with
      Alice's private identity key. The signature may be a post-quantum
      scheme (preferred) or a hybrid signature that includes both a
@@ -404,7 +404,7 @@ Table of Contents
    They now likely perform a **key agreement** to get a final session
    key:
    - If using a post-quantum KEM (e.g., Kyber): Alice might have
-   included 
+   included
      a PQ public key in her ClientHello. Bob now includes the KEM
      ciphertext in his ServerHello (which encapsulates a random key
      K_pq). Alice will decapsulate it to get K_pq. Now both have K_pq.
@@ -497,7 +497,7 @@ Table of Contents
 
    After a successful handshake, all further messages in the session
    are encrypted and encoded according to QASWP data format. This
-   section 
+   section
    describes how application data is handled in QASWP.
 
 #### 5.1. Message Encoding and Compression
@@ -521,7 +521,7 @@ Table of Contents
    - **Decoding**: The receiver's CompressionEngine takes `Z` and `C`
      and decodes to reconstruct `M'` (the receiver's estimate of the
      original message). Ideally, `M'` equals `M` if the model and
-     context 
+     context
      are perfectly synchronized and the channel introduced no errors.
      Minor differences could occur if the model is lossy or approximate,
      but for most textual/data communications, it should be exact or
@@ -557,7 +557,7 @@ Table of Contents
      something in uncompressed form. These details are policy-specific
      and not fixed by the protocol, but a simple approach is:
        * If decoding fails, abort the session (as it's likely
-       out-of-sync 
+       out-of-sync
          or an attack).
        * Alternatively, have a "fall back to raw" flag: the sender can
          re-send the last message without compression if it suspects
@@ -718,7 +718,7 @@ Table of Contents
    application layer).
    If using an unreliable transport, explicit ACK packets would be
    needed to implement retransmissions (but that essentially
-   reimplements 
+   reimplements
    a reliability layer, which is beyond QASWP's scope).
 
    **Maximum context length**:
@@ -813,7 +813,7 @@ Table of Contents
      messages might look like if they intercept encrypted payloads and
      brute-force some possibilities through the model. However, without
      the key to decrypt, they just have ciphertext. Even with
-     ciphertext, 
+     ciphertext,
      trying to guess plaintext by model inversion is extremely hard
      (they would have to guess both context and message correctly and
      still wouldn't verify without the tag). So model theft alone
@@ -832,7 +832,7 @@ Table of Contents
      proofs to impersonate Alice and Bob to each other, which would
      fail if the real keys are known to each side.
    - The handshake MACs ensure the MITM can't modify handshake
-   parameters 
+   parameters
      (like downgrading algorithms or changing model ID) without
      detection.
 
@@ -915,7 +915,7 @@ Table of Contents
 7. Implementation Notes
 
    This section provides guidance for implementers regarding
-   integration, 
+   integration,
    performance tuning, and interoperability.
 
    **Model Distribution**:
