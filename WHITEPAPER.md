@@ -345,16 +345,49 @@ In conclusion, QASWP demonstrates a pathway towards communications that are **ef
 
 ## References
 
-1. Ogenyi, F. C., Ugwu, C. N., & Ugwu, O. P.-C. (2025). *AI-native 6G: Integrating semantic communications, reconfigurable intelligent surfaces, and edge intelligence for next-generation connectivity*. Frontiers in Communications and Networks, 6, 1655410.[1][2]
+1. Ogenyi, F. C., Ugwu, C. N., & Ugwu, O. P.-C. (2025). *AI-native 6G: Integrating semantic communications, reconfigurable intelligent surfaces, and edge intelligence for next-generation connectivity.* **Frontiers in Communications and Networks**, 6, 1655410. [1][2]
 
-2. Ling, X. (Frank), & Moreno, J. (2025). *Quantum key distribution and authentication: Separating facts from myths*. Amazon Science Blog, Jan 14, 2025.[4][6]
+2. Ling, X. (Frank), & Moreno, J. (2025). *Quantum key distribution and authentication: Separating facts from myths.* **Amazon Science Blog**, Jan 14, 2025. [4][6]
 
-3. Cosmin, D. (2025). *Quantum Entanglement and the Semantics of Shared Meaning*. Medium article, June 19, 2025.[13][14]
+3. Cosmin, D. (2025). *Quantum Entanglement and the Semantics of Shared Meaning.* **Medium article**, June 19, 2025. [13][14]
 
-4. Maheri, M. M., Haddadi, H., & Davidson, A. (2025). *TeleSparse: Practical Privacy-Preserving Verification of Deep Neural Networks*. Privacy Enhancing Technologies Symposium (PETS) 2025.[11][12]
+4. Maheri, M. M., Haddadi, H., & Davidson, A. (2025). *TeleSparse: Practical Privacy-Preserving Verification of Deep Neural Networks.* **Privacy Enhancing Technologies Symposium (PETS) 2025.** [11][12]
 
-5. Wang, S. (2025). *A Quantum Good Authentication Protocol (QGP)*. Journal of Cyber Security and Information Systems, 9(1), 11-21.[8][9]
+5. Wang, S. (2025). *A Quantum Good Authentication Protocol (QGP).* **Journal of Cyber Security and Information Systems**, 9(1), 11–21. [8][9]
 
-6. Choe, J., Jouini, O., et al. (2024). *Semantic Communication and Completion (SCC) frameworks – challenges in real-world deployment*. (Referenced in Ogenyi et al. 2025 review)[10]
+6. Choe, J., Jouini, O., et al. (2024). *Semantic Communication and Completion (SCC) frameworks – challenges in real-world deployment.* (Referenced in Ogenyi et al. 2025 review.) [10]
 
-*(Additional references omitted for brevity.)*
+7. **NIST PQC Project.** (2024). *Post-Quantum Cryptography Standardization Project – Round 4 Candidates.*  
+   [https://csrc.nist.gov/projects/post-quantum-cryptography](https://csrc.nist.gov/projects/post-quantum-cryptography)
+
+8. **IETF Quantum Internet Research Group (QIRG).** (2024). *RFC 9583 – Use Cases for a Quantum Internet.*  
+   [https://datatracker.ietf.org/doc/rfc9583/](https://datatracker.ietf.org/doc/rfc9583/)
+
+9. **Bennett, C. H., & Brassard, G.** (1984). *Quantum Cryptography: Public Key Distribution and Coin Tossing.*  
+   *Proceedings of IEEE International Conference on Computers, Systems and Signal Processing (Bangalore, India), 175–179.*
+
+10. **Ekert, A. K.** (1991). *Quantum Cryptography Based on Bell’s Theorem.*  
+    *Physical Review Letters, 67*(6), 661–663. [DOI:10.1103/PhysRevLett.67.661]
+
+11. **Shor, P. W.** (1994). *Algorithms for Quantum Computation: Discrete Logarithms and Factoring.*  
+    *Proceedings of the 35th Annual Symposium on Foundations of Computer Science (FOCS ’94), 124–134.*
+
+12. **Boneh, D., & Franklin, M.** (2001). *Identity-Based Encryption from the Weil Pairing.*  
+    *Advances in Cryptology – CRYPTO 2001, LNCS 2139, Springer.*
+
+13. **Goodfellow, I., Bengio, Y., & Courville, A.** (2016). *Deep Learning.* MIT Press.  
+    [https://www.deeplearningbook.org/](https://www.deeplearningbook.org/)
+
+14. **Goldreich, O.** (2001). *Foundations of Cryptography: Volume 1 – Basic Tools.* Cambridge University Press.
+
+15. **Ben-Sasson, E., et al.** (2014). *SNARKs for C: Verifying Program Executions Succinctly and in Zero Knowledge.*  
+    *Proceedings of CRYPTO 2014.*
+
+16. **Zhang, C., Li, J., et al.** (2023). *Semantic Communication Networks: A Machine Learning Perspective.*  
+    *IEEE Communications Surveys & Tutorials, 25*(1), 445–472.
+
+17. **Zhou, X., Chen, S., & Zhu, W.** (2023). *Edge Intelligence for Semantic Communication in 6G.*  
+    *IEEE Internet of Things Journal, 10*(2), 1805–1816.
+
+18. **Nedovodin, N.** (2025). *Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP): Design, Security, and Implementation.*  
+    *CPUTER Research Technical Report, Version 2.0.*
