@@ -1,5 +1,14 @@
-from hypothesis import given, strategies as st
+import pytest
+from importlib import import_module
 
+try:
+    hypothesis = import_module("hypothesis")
+    strategies = import_module("hypothesis.strategies")
+except Exception:  # No hypothesis in offline CI
+    pytest.skip("Hypothesis unavailable; skipping property-based robustness", allow_module_level=True)
+
+from hypothesis import given
+from hypothesis import strategies as st
 from src.qaswp import QASWPSession
 
 
@@ -13,6 +22,8 @@ def _handshake_server() -> QASWPSession:
     return server
 
 
+@pytest.mark.robust
+@pytest.mark.hypothesis
 @given(
     nonce=st.binary(min_size=0, max_size=24),
     payload=st.binary(min_size=0, max_size=256),
