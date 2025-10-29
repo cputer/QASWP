@@ -205,6 +205,17 @@ class QASWPSession:
         if not self.session_key:
             raise ConnectionError("Session not established.")
 
+        # Placeholders (no flush yet) are represented with zero wire length or an
+        # explicit "flushed" flag. These should be treated as a no-op so we do
+        # not attempt to decrypt empty data.
+        wire_len = packet.get("wire_len") if isinstance(packet, dict) else None
+        flushed = packet.get("flushed") if isinstance(packet, dict) else None
+        if wire_len == 0 or flushed is False:
+            return None
+
+        if not packet.get("nonce") or not packet.get("encrypted_payload"):
+            return None
+
         aesgcm = AESGCM(self.session_key)
         decrypted_payload = aesgcm.decrypt(packet["nonce"], packet["encrypted_payload"], None)
         return json.loads(decrypted_payload.decode())

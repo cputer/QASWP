@@ -41,3 +41,10 @@ def test_demo_zk_like_proof_is_succinct_and_verifies():
     proof = cli.demo_generate_proof(msg)
     assert len(proof) <= 64
     assert cli.demo_verify_proof(proof, msg)
+
+
+def test_receive_woven_packet_ignores_placeholder_packets():
+    cli, srv = do_handshake()
+    placeholder = cli.weave_packet([VOCAB["GET"], VOCAB["/api/v1/profile"]])
+    assert placeholder["wire_len"] == 0
+    assert srv.receive_woven_packet(placeholder) is None
