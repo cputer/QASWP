@@ -135,6 +135,23 @@ A Qiskit handshake scaffold is provided behind a feature flag:
 
 > Note: The current scaffold returns a deterministic 32-byte demo key when enabled. In v2.2.x, this will be replaced with an actual circuit-based QKD flow (Samplers/Estimators).
 
+#### Enabling the Qiskit-backed handshake (optional, v2.2+)
+
+- Export the feature flag and install Qiskit locally:
+
+  ```bash
+  export QASWP_QISKIT=1
+  pip install qiskit
+  ```
+
+- Run the optional integration test (skips automatically when the backend is unavailable):
+
+  ```bash
+  pytest -q tests/test_qiskit_integration_optional.py
+  ```
+
+- In CI, the **Qiskit Smoke** workflow remains a manual trigger. It attempts to install Qiskit and runs the smoke/integration tests; it will pass even when the backend is missing, logging the skip reason.
+
 ---
 
 ### ⚖️ Theoretical Limits & Semantic Compression
