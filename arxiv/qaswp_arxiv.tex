@@ -1,0 +1,25 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath, amssymb}
+\title{QASWP: Quantum-Authenticated Neural Semantic Weaving Protocol (Demo Validation)}
+\author{Nikolai Nedovodin (CPUTER Inc.)}
+\date{October 2025}
+\begin{document}
+\maketitle
+\begin{abstract}
+We provide an empirical validation of a demo-mode implementation of QASWP.
+\end{abstract}
+\section{Introduction}
+This note accompanies the open-source implementation and focuses purely on demo-mode results.
+\section{Compression}
+Batching confirmation bits yields over 95\% compression on repeated templated traffic.
+\section{Shared Key and Entanglement}
+Keys are synchronized in demo; a deterministic id provides 0-byte sync.
+\section{Verification}
+We include a 64-byte commitment-style verification (not a SNARK) to demonstrate succinct checks.
+\section{Reproducibility}
+CI job runs the scripts in proofs/ and retains pass/fail status.
+\section{Limitations}
+Demo-scoped; not a replacement for full security proofs nor hardware QKD results.
+\end{document}
