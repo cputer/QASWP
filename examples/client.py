@@ -50,6 +50,13 @@ def run_client():
     else:
         print("❌ FAILURE: Prediction mismatch.")
 
+    flush_packet = client_session.flush()
+    if flush_packet:
+        print(
+            "🔄 Flushed trailing confirmations: "
+            f"+{flush_packet['wire_len']} bytes on the wire."
+        )
+
 
 if __name__ == "__main__":
     run_client()

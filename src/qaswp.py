@@ -38,11 +38,11 @@ class QASWPSession:
             "flushed": False,
         }
 
-    def _emit_batch_packet(self, nonce=None):
+    def _emit_pending_batch_if_any(self, nonce=None):
         if not self.session_key:
             raise ConnectionError("Session not established.")
         if self._confirm_count == 0:
-            return self._empty_packet()
+            return None
 
         seq = self._seq
         count = self._confirm_count
@@ -69,7 +69,21 @@ class QASWPSession:
 
     def flush_confirmations(self):
         """Flush any buffered confirmation bits as an encrypted batch."""
-        return self._emit_batch_packet()
+        packet = self.flush()
+        if packet is None:
+            return self._empty_packet()
+        return packet
+
+    def flush(self):
+        """
+        Emit any buffered confirmation batch as an encrypted woven packet.
+
+        Returns the same dict shape as weave_packet(...) when something is
+        emitted. When there is nothing pending, returns ``None``.
+        """
+
+        packet = self._emit_pending_batch_if_any()
+        return packet
 
     def _update_transcript(self, data):
         self.transcript += data
@@ -167,14 +181,15 @@ class QASWPSession:
             if self._confirm_count < self._batch_size:
                 return self._empty_packet()
             # flush batch when we hit the batch size threshold
-            return self._emit_batch_packet(nonce)
+            batch_packet = self._emit_pending_batch_if_any(nonce)
+            return batch_packet or self._empty_packet()
         else:
             # mismatch → flush any pending confirmations first, then send corrective
             packets = []
             total_len = 0
             if self._confirm_count > 0:
-                batch_packet = self.flush_confirmations()
-                if batch_packet["flushed"]:
+                batch_packet = self.flush()
+                if batch_packet:
                     total_len += batch_packet["wire_len"]
                     packets.append(batch_packet)
                 nonce = secrets.token_bytes(12)
