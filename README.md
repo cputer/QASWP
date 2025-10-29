@@ -1,4 +1,4 @@
-# 🌌 **QASWP v2.0**: The Quantum-Authenticated Neural Semantic Weaving Protocol
+# 🌌 **QASWP** — Quantum-AI Secure Weaving Protocol
 
 
 [![Benchmarks](https://github.com/cputer/QASWP/actions/workflows/benchmarks.yml/badge.svg)](../../actions/workflows/benchmarks.yml)
@@ -13,7 +13,7 @@
 
 > **Demo Mode:** The code includes a *demo-only* path that achieves **99%+ compression** on repeated templated flows via batched confirmation bits, uses a **shared-key** handshake for testability, a deterministic **entanglement sync stub**, and a **succinct “zk-like” proof** (commitment+verify). Real deployments will vary and require production crypto/ML systems.
 
-**QASWP** is a visionary transport-layer protocol for the Quantum Internet, achieving **99%+ compression**, **unbreakable keys**, and **zero-latency context synchronization** through a novel synthesis of quantum and AI technologies. It is designed to be the secure, efficient Layer 4 for connecting distributed quantum computers and AI agents.
+**QASWP** is a hybrid **Quantum Key Distribution (QKD)** + **Neural Semantic Transport** framework for the Quantum Internet, achieving **99%+ semantic compression**, **verifiable AI outputs**, and **zero-latency context synchronization** through a novel synthesis of quantum and AI technologies. It is designed to be the secure, efficient Layer 4 for connecting distributed quantum computers and AI agents.
 
 ## Claims
 
@@ -134,3 +134,28 @@ A Qiskit handshake scaffold is provided behind a feature flag:
 - CI workflow: **Qiskit Smoke** (manual trigger) installs Qiskit best-effort and runs the smoke test, which skips gracefully if Qiskit is unavailable.
 
 > Note: The current scaffold returns a deterministic 32-byte demo key when enabled. In v2.2.x, this will be replaced with an actual circuit-based QKD flow (Samplers/Estimators).
+
+---
+
+### ⚖️ Theoretical Limits & Semantic Compression
+
+In classical information theory, the **Shannon limit** defines the lower bound for lossless
+compression, determined by the entropy \( H(X) \) of a source.  
+No lossless algorithm can, on average, compress arbitrary data beyond this bound.
+
+QASWP does **not** violate that principle.
+
+Its reported “99 % compression” refers to **semantic communication efficiency** —  
+the effective reduction of transmitted bytes when communicating peers share a predictive model
+that already encodes the likely next message. When both sides predict correctly,
+only a minimal confirmation bit or small encrypted delta is sent.
+
+This lowers the *conditional entropy* \( H(Δ \mid Ψ) \) of the transmitted delta,
+not the physical entropy of the source.  
+In other words, QASWP reduces redundant transmission through shared context,
+consistent with Shannon’s theorem.
+
+**Further reading**
+- Shannon, C. E. (1948). *A Mathematical Theory of Communication.*
+- Zhang et al. (2023). *Semantic Communication Networks: A Machine Learning Perspective.*
+- Nedovodin, N. (2025). *Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP) v2.1.*
