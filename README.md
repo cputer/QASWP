@@ -1,10 +1,9 @@
 # 🌌 **QASWP v2.0**: The Quantum-Authenticated Neural Semantic Weaving Protocol
 
 
-[![CI](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/python-tests.yml?branch=main)](https://github.com/cputer/QASWP/actions/workflows/python-tests.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/codeql.yml?label=CodeQL)](https://github.com/cputer/QASWP/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/github/v/release/cputer/QASWP?display_name=tag)](https://github.com/cputer/QASWP/releases)
-[![Claim Tests (Demo)](https://github.com/cputer/QASWP/actions/workflows/claim-tests.yml/badge.svg)](../../actions/workflows/claim-tests.yml)
+[![Benchmarks](https://github.com/cputer/QASWP/actions/workflows/benchmarks.yml/badge.svg)](../../actions/workflows/benchmarks.yml)
+[![Fuzz](https://github.com/cputer/QASWP/actions/workflows/fuzz.yml/badge.svg)](../../actions/workflows/fuzz.yml)
+[![Tests](https://github.com/cputer/QASWP/actions/workflows/test-claims.yml/badge.svg)](../../actions/workflows/test-claims.yml)
 
 
 [![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)

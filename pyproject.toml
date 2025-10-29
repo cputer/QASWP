@@ -1,6 +1,6 @@
 [project]
 name = "qaswp"
-version = "0.0.0"
+version = "2.1.0"
 requires-python = ">=3.10"
 description = "Quantum-Authenticated Neural Semantic Weaving Protocol (demo simulation)"
 readme = "README.md"
