@@ -24,4 +24,4 @@ By contributing, you agree your contributions are licensed to **CPUTER Inc.** un
 proprietary license (see `LICENSE`). CPUTER Inc. may relicense contributions for commercial use.
 
 ## Reporting Security Issues
-Please email `security@puter.example` (replace with your address). We’ll respond promptly.
+Please email `info@cputer.com`. We’ll respond promptly.

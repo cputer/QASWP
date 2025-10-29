@@ -1,15 +1,15 @@
 # 🌌 **QASWP v2.0**: The Quantum-Authenticated Neural Semantic Weaving Protocol
 
 
-[![CI](https://img.shields.io/github/actions/workflow/status/YourOrg/QASWP/python-tests.yml?branch=main)](#)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/YourOrg/QASWP/codeql.yml?label=CodeQL)](#)
-[![Release](https://img.shields.io/github/v/release/YourOrg/QASWP?display_name=tag)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/python-tests.yml?branch=main)](https://github.com/cputer/QASWP/actions/workflows/python-tests.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/cputer/QASWP/codeql.yml?label=CodeQL)](https://github.com/cputer/QASWP/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/cputer/QASWP?display_name=tag)](https://github.com/cputer/QASWP/releases)
 
 
 [![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)
 [![Python](https://img.shields.io/badge/Python-3.10+-green)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Stars](https://img.shields.io/github/stars/YourUsername/QASWP)](https://github.com/YourUsername/QASWP)
+[![Stars](https://img.shields.io/github/stars/cputer/QASWP)](https://github.com/cputer/QASWP)
 
 **QASWP** is a visionary transport-layer protocol for the Quantum Internet, achieving **99%+ compression**, **unbreakable keys**, and **zero-latency context synchronization** through a novel synthesis of quantum and AI technologies. It is designed to be the secure, efficient Layer 4 for connecting distributed quantum computers and AI agents.
 
@@ -65,14 +65,14 @@ Join the future of communication! Star this repo, open an issue, or submit a pul
 
 This repository is publicly visible for research and collaboration but is **not open-source**.
 - **Non-commercial** evaluation and research use are allowed under the **CPUTER Inc. Public Repository Proprietary License (Royalty-Bearing)**.
-- **Commercial use** requires a paid license and royalties. Contact **licensing@puter.example** (replace with your address).
+- **Commercial use** requires a paid license and royalties. Contact **info@cputer.com**.
 
 See [`LICENSE`](./LICENSE) and [`NOTICE`](./NOTICE) for details.
 
 
-[![Coverage](https://img.shields.io/badge/coverage-unknown-informational)](#)
-[![Docs](https://img.shields.io/badge/docs-mkdocs--material-informational)](#)
-[![Conventional Commits](https://img.shields.io/badge/commits-conventional-yellow)](#)
+[![Coverage](https://img.shields.io/badge/coverage-unknown-informational)](https://github.com/cputer/QASWP/actions/workflows/coverage.yml)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-informational)](https://github.com/cputer/QASWP/actions/workflows/docs.yml)
+[![Conventional Commits](https://img.shields.io/badge/commits-conventional-yellow)](https://www.conventionalcommits.org/)
 
 
 ## 🧪 Testing Matrix
