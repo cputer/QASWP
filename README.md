@@ -1,38 +1,45 @@
-# 🌌 **QASWP** — Quantum-AI Secure Weaving Protocol
-
+# 🌌 QASWP — Quantum-AI Secure Weaving Protocol
 
 [![Benchmarks](https://github.com/cputer/QASWP/actions/workflows/benchmarks.yml/badge.svg)](../../actions/workflows/benchmarks.yml)
 [![Fuzz](https://github.com/cputer/QASWP/actions/workflows/fuzz.yml/badge.svg)](../../actions/workflows/fuzz.yml)
 [![Tests](https://github.com/cputer/QASWP/actions/workflows/test-claims.yml/badge.svg)](../../actions/workflows/test-claims.yml)
-
-
-[![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)
-[![Python](https://img.shields.io/badge/Python-3.10+-green)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Qiskit Smoke](https://github.com/cputer/QASWP/actions/workflows/qiskit.yml/badge.svg)](../../actions/workflows/qiskit.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/cputer/QASWP)](https://github.com/cputer/QASWP)
+[![IETF QIRG](https://img.shields.io/badge/IETF-QIRG-blue)](https://datatracker.ietf.org/wg/qirg/)
 
-> **Demo Mode:** The code includes a *demo-only* path that achieves **99%+ compression** on repeated templated flows via batched confirmation bits, uses a **shared-key** handshake for testability, a deterministic **entanglement sync stub**, and a **succinct “zk-like” proof** (commitment+verify). Real deployments will vary and require production crypto/ML systems.
+---
 
-**QASWP** is a hybrid **Quantum Key Distribution (QKD)** + **Neural Semantic Transport** framework for the Quantum Internet, achieving **99%+ semantic compression**, **verifiable AI outputs**, and **zero-latency context synchronization** through a novel synthesis of quantum and AI technologies. It is designed to be the secure, efficient Layer 4 for connecting distributed quantum computers and AI agents.
+### Overview
 
-## Claims
+**QASWP** is a hybrid **Quantum Key Distribution (QKD)** + **Neural Semantic Transport** framework for the **Quantum Internet**, achieving predictive compression, verifiable AI inference, and context synchronization between distributed agents.
 
-## Demo Validation (Scope & CI)
+It fuses quantum security primitives with neural-semantic prediction to create a verifiable, low-latency Layer 4 protocol connecting quantum computers and AI systems.
 
-> **Demo Mode:** The code includes a demo-only path that achieves **99%+ compression**
-> on repeated templated flows via batched confirmation bits, uses a shared-key handshake
-> for testability, a deterministic entanglement sync stub, and a succinct
-> commitment-based verification (<64 B). Real deployments will vary.
+---
 
-**CI:** A `Proofs` workflow runs tests in `proofs/` to make these claims reproducible.
-- Compression benchmark: repeated templated flows ≥ 95% savings (often ≥ 99%)
-- Shared-session keys: encryption/decryption symmetry confirmed
-- Entanglement stub: identical IDs on both ends (0-byte sync)
-- Succinct verify: 64-byte proof check passes
+### Demo Mode
 
-## 🚀 **Quick Demo (30 seconds)**
+The **demo-only** path demonstrates ≥ 99 % *semantic compression* on repeated templated flows via batched confirmation bits.  
+It uses a shared-key handshake for testability, a deterministic entanglement sync stub, and a succinct “zk-like” proof (commitment + verify).  
+Real deployments will vary and require production-grade crypto/ML systems.
 
-Clone the repository and run the simulation:
+---
+
+## 📈 Claims & Validation
+
+**CI:** The `Proofs` workflow in `/proofs/` runs reproducible validation tests:
+
+- **Compression benchmark:** templated flows ≥ 95 % savings (typically ≥ 99 %)  
+- **Shared-session keys:** encryption/decryption symmetry confirmed  
+- **Entanglement stub:** identical IDs on both ends (0-byte sync)  
+- **Succinct verify:** 64-byte proof check passes  
+
+---
+
+## 🚀 Quick Demo (30 seconds)
+
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
@@ -45,6 +52,7 @@ python examples/client.py
 ```
 
 **Expected Output:**
+
 ```text
 [QASWP Server] Listening for quantum-neural connections...
 [QASWP Client] Handshake successful! QBER=0.00% | Session Key derived.
@@ -54,125 +62,122 @@ python examples/client.py
 [Stats] Compression Ratio: 99.8% 🚀
 ```
 
-### Packet semantics & flushing
+---
 
-- **Placeholders:** Packets emitted while confirmations are still buffering have
-  `flushed=False`, `wire_len=0`, and empty `nonce`/`encrypted_payload`. Receivers
-  **must treat these as no-ops**.
-- **Stream boundaries:** Call `QASWPSession.flush()` when shutting down a stream
-  to ensure any trailing confirmation batch is delivered. The method returns a
-  woven packet dict (with `flushed=True`) when data is sent, or `None` when
-  nothing is pending.
-- **Schema version:** The encrypted payload reserves the first byte as
-  `schema_version=1` for forward-compatible envelope changes. Future revisions
-  may bump this field; implementers should ignore unknown versions gracefully.
+### Packet Semantics & Flushing
+
+* **Placeholders:** non-flushed packets have `flushed=False`, `wire_len=0`, and empty `nonce`/`payload`; receivers must treat them as **no-ops**.
+* **Stream boundaries:** call `QASWPSession.flush()` before shutdown to emit trailing confirmations.
+* **Schema version:** first byte of encrypted payload is `schema_version=1` for forward compatibility.
+
+---
 
 ## 📖 Documentation
 
-- 📚 [Overview](/docs/overview.md)
-- 📚 [API Reference](/docs/api.md)
-- 📚 [WHITEPAPER.md](WHITEPAPER.md): A 20-page deep dive into the theory, mathematics, and architecture of QASWP.
-- 📚 [IETF-DRAFT.txt](IETF-DRAFT.txt): An RFC-style specification of the protocol, ready for submission to research groups.
-- 📚 [API_REFERENCE.md](API_REFERENCE.md): Core logic documented in `QASWPSession(is_client=True)`.
+* [Overview](/docs/overview.md)
+* [API Reference](/docs/api.md)
+* [WHITEPAPER.md](WHITEPAPER.md): 20-page technical deep dive
+* [IETF-DRAFT.txt](IETF-DRAFT.txt): RFC-style specification
+* [API_REFERENCE.md](API_REFERENCE.md): core logic (`QASWPSession(is_client=True)`)
+
+---
 
 ## 🛠 Core Features
 
-- ✅ **Hybrid Security**: Combines QKD (BB84) for real-time eavesdropping detection with Kyber+Dilithium for post-quantum computational security.
-- ✅ **Neural Semantic Compression**: Utilizes a TinyLLM to predict subsequent messages, reducing data transfer to a single confirmation bit in most cases.
-- ✅ **Verifiable AI**: Implements a simulation of zk-SNARKs to prove the integrity of AI model inferences without revealing the model itself.
-- ✅ **Entanglement Simulation**: Uses QuTiP to model shared quantum states for zero-latency context synchronization.
+* ✅ **Hybrid Security:** combines QKD (BB84) for eavesdrop detection with Kyber + Dilithium for post-quantum safety
+* ✅ **Neural Semantic Compression:** TinyLLM prediction → single-bit confirmation
+* ✅ **Verifiable AI:** zk-proof-like inference verification
+* ✅ **Entanglement Simulation:** QuTiP-based shared-state model for zero-latency context sync
+
+---
 
 ## 🔮 Future Roadmap
 
-- **Qiskit Integration**: Transition QKD simulation to real quantum backends (2026).
-- **Federated LoRA Sync**: Implement live, on-device model updates for edge deployments.
-- **Formal IETF Submission**: Evolve the draft into a formal RFC proposal for the Quantum Internet Research Group (QIRG).
-
-Join the future of communication! Star this repo, open an issue, or submit a pull request. 🌌
-
+* **Qiskit Integration:** transition QKD to real quantum backends (2026)
+* **Federated LoRA Sync:** live on-device model updates for edge nodes
+* **Formal IETF Submission:** evolve draft → RFC proposal for QIRG
 
 ---
 
 ## 🔐 Licensing & Commercial Use
 
-This repository is publicly visible for research and collaboration but is **not open-source**.
-- **Non-commercial** evaluation and research use are allowed under the **CPUTER Inc. Public Repository Proprietary License (Royalty-Bearing)**.
-- **Commercial use** requires a paid license and royalties. Contact **info@cputer.com**.
+Public for research and collaboration, but **not open-source**.
 
-See [`LICENSE`](./LICENSE) and [`NOTICE`](./NOTICE) for details.
+* Non-commercial research use allowed under the **CPUTER Inc. Proprietary License (Royalty-Bearing)**
+* Commercial use requires a paid license and royalties
+* Contact **[info@cputer.com](mailto:info@cputer.com)** for licensing
 
+See [`LICENSE`](./LICENSE) and [`NOTICE`](./NOTICE).
 
-[![Coverage](https://img.shields.io/badge/coverage-unknown-informational)](https://github.com/cputer/QASWP/actions/workflows/coverage.yml)
-[![Docs](https://img.shields.io/badge/docs-mkdocs--material-informational)](https://github.com/cputer/QASWP/actions/workflows/docs.yml)
-[![Conventional Commits](https://img.shields.io/badge/commits-conventional-yellow)](https://www.conventionalcommits.org/)
+---
 
+### Qiskit-Backed QKD (v2.2 Scaffold)
 
-## 🧪 Testing Matrix
-- Local: `pytest`, `coverage`
-- CI: GitHub Actions (`CI`, `Coverage`, `Lint`, `CodeQL`)
-- Envs: Python 3.10, 3.11 (tox/nox)
+Feature-flagged optional handshake using Qiskit (IBM Quantum).
 
-## 🐳 Docker
 ```bash
-docker build -t qaswp .
-docker run --rm qaswp
+export QASWP_QISKIT=1
+pip install qiskit
+pytest -q tests/test_qiskit_stub.py
+pytest -q tests/test_qiskit_integration_optional.py
 ```
 
-## 🧰 Devcontainer
-Open in VS Code → Command Palette → “Dev Containers: Open Folder in Container...”
+In CI, the **Qiskit Smoke** workflow can be triggered manually; it installs Qiskit best-effort and skips cleanly if unavailable.
 
-## 📦 Releasing
-- Release notes drafted automatically by **Release Drafter**.
-- Bump version in `CHANGELOG.md` and tag: `git tag v2.3 && git push --tags`.
-
-### Qiskit-backed QKD (v2.2.0 scaffold)
-
-A Qiskit handshake scaffold is provided behind a feature flag:
-
-- Enable with `QASWP_QISKIT=1`.
-- Run the local smoke test: `QASWP_QISKIT=1 pytest -q tests/test_qiskit_stub.py`.
-- CI workflow: **Qiskit Smoke** (manual trigger) installs Qiskit best-effort and runs the smoke test, which skips gracefully if Qiskit is unavailable.
-
-> Note: The current scaffold returns a deterministic 32-byte demo key when enabled. In v2.2.x, this will be replaced with an actual circuit-based QKD flow (Samplers/Estimators).
-
-#### Enabling the Qiskit-backed handshake (optional, v2.2+)
-
-- Export the feature flag and install Qiskit locally:
-
-  ```bash
-  export QASWP_QISKIT=1
-  pip install qiskit
-  ```
-
-- Run the optional integration test (skips automatically when the backend is unavailable):
-
-  ```bash
-  pytest -q tests/test_qiskit_integration_optional.py
-  ```
-
-- In CI, the **Qiskit Smoke** workflow remains a manual trigger. It attempts to install Qiskit and runs the smoke/integration tests; it will pass even when the backend is missing, logging the skip reason.
+> Current scaffold returns a deterministic 32-byte demo key.
+> Future revisions will derive real keys from Qiskit circuits (Samplers / Estimators).
 
 ---
 
 ### ⚖️ Theoretical Limits & Semantic Compression
 
-In classical information theory, the **Shannon limit** defines the lower bound for lossless
-compression, determined by the entropy \( H(X) \) of a source.  
-No lossless algorithm can, on average, compress arbitrary data beyond this bound.
+In classical information theory, the **Shannon limit** defines the lower bound for lossless compression, set by source entropy ( H(X) ).
+QASWP does **not** violate that law.
+Its “99 % compression” describes **semantic efficiency**—reducing transmitted bits when peers share predictive context.
 
-QASWP does **not** violate that principle.
+[
+\text{Effective compression} = 1 - \frac{H(Δ|Ψ)}{H(M)}
+]
 
-Its reported “99 % compression” refers to **semantic communication efficiency** —  
-the effective reduction of transmitted bytes when communicating peers share a predictive model
-that already encodes the likely next message. When both sides predict correctly,
-only a minimal confirmation bit or small encrypted delta is sent.
+When ( H(Δ|Ψ)\to0 ), apparent compression approaches 100 %, but total entropy remains consistent with Shannon’s theorem.
 
-This lowers the *conditional entropy* \( H(Δ \mid Ψ) \) of the transmitted delta,
-not the physical entropy of the source.  
-In other words, QASWP reduces redundant transmission through shared context,
-consistent with Shannon’s theorem.
+**References**
 
-**Further reading**
-- Shannon, C. E. (1948). *A Mathematical Theory of Communication.*
-- Zhang et al. (2023). *Semantic Communication Networks: A Machine Learning Perspective.*
-- Nedovodin, N. (2025). *Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP) v2.1.*
+* Shannon (1948) *A Mathematical Theory of Communication*
+* Zhang et al. (2023) *Semantic Communication Networks*
+* Nedovodin (2025) *QASWP v2.1 Technical Report*
+
+---
+
+## 🧪 Testing Matrix
+
+* Local: `pytest`, `coverage`
+* CI: GitHub Actions (CI, Coverage, Lint, CodeQL)
+* Environments: Python 3.10 – 3.11 (tox/nox)
+
+---
+
+## 🐳 Docker
+
+```bash
+docker build -t qaswp .
+docker run --rm qaswp
+```
+
+---
+
+## 🧰 Dev Container
+
+Open in VS Code → “Dev Containers: Open Folder in Container…”
+
+---
+
+## 📦 Releasing
+
+* Release notes via **Release Drafter**
+* Version bump in `CHANGELOG.md` → `git tag v2.3 && git push --tags`
+
+---
+
+Join the future of communication 🌌 — Star this repo, open issues, or submit PRs.
+
