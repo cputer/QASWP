@@ -3,3 +3,4 @@ numpy
 qutip
 cryptography
 matplotlib
+pytest
