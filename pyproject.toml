@@ -1,7 +1,21 @@
+[project]
+name = "qaswp"
+version = "0.0.0"
+requires-python = ">=3.10"
+description = "Quantum-Authenticated Neural Semantic Weaving Protocol (demo simulation)"
+readme = "README.md"
+
 [tool.black]
 line-length = 100
-target-version = ["py310", "py311"]
+target-version = ["py311"]
 
-[tool.isort]
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-select = ["E", "F", "I", "B"]
+ignore = ["E203", "W503"]
+exclude = ["site", "build", "dist", ".venv", "venv"]
+
+[tool.ruff.isort]
+known-first-party = ["src"]
 profile = "black"
-line_length = 100
