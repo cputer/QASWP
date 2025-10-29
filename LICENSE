@@ -1,21 +1,52 @@
-MIT License
+CPUTER Inc. Public Repository Proprietary License (Royalty-Bearing) v1.0
+====================================================================
 
-Copyright (c) 2025 Nikolai Nedovodin
+Copyright (c) 2025 CPUTER Inc. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Ownership
+   The Software and all associated content in this repository (“Software”) are owned by CPUTER Inc.
+   No rights are granted except as expressly set forth herein.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. Permitted Uses (Non-Commercial)
+   Subject to your full compliance with this License, CPUTER Inc. grants you a limited, revocable,
+   non-exclusive, non-transferable license to:
+     a) download, view, and locally run the Software for evaluation, research, educational,
+        or other non-commercial purposes;
+     b) modify the Software for your internal, non-commercial use only; and
+     c) create public forks and pull requests to this repository for the purpose of contributing
+        changes back under this License.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+3. Prohibited Uses (Without a Commercial License)
+   Unless you obtain a separate commercial license from CPUTER Inc., you MAY NOT:
+     a) use the Software for any commercial purpose, including providing services to third parties,
+        operating a hosted service, or embedding the Software in commercial products;
+     b) distribute, sublicense, sell, rent, lease, or otherwise make the Software or derivative
+        works available to third parties, except for public forks under Section 2(c);
+     c) remove or alter any copyright, trademark, or proprietary notices;
+     d) use the name, logos, or trademarks of CPUTER Inc. to imply endorsement.
+
+4. Commercial Use and Royalties
+   Commercial use requires a separate, written license agreement with CPUTER Inc.
+   Royalties or other commercial terms will apply.
+   To obtain a commercial license, contact: licensing@puter.example (replace with your contact).
+
+5. Contributions
+   By submitting any contribution (code, documentation, issues, pull requests) to this repository,
+   you agree that such contribution is licensed to CPUTER Inc. under the same terms as the Software,
+   including the right for CPUTER Inc. to relicense under proprietary or commercial terms.
+   You represent that you have the right to make such contributions.
+
+6. No Warranty
+   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+   NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+   NON-INFRINGEMENT. IN NO EVENT SHALL CPUTER INC. OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES
+   OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. Termination
+   This License terminates automatically if you breach any term. Upon termination, you must cease
+   all use and destroy all copies of the Software in your possession or control.
+
+8. Governing Law
+   This License is governed by the laws of the jurisdiction where CPUTER Inc. is incorporated,
+   without regard to conflict-of-law principles.

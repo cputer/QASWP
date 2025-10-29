@@ -1,0 +1,13 @@
+site_name: QASWP Docs
+site_description: Quantum-Authenticated Neural Semantic Weaving Protocol
+repo_url: https://github.com/YourOrg/QASWP
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - API Reference: api.md
+markdown_extensions:
+  - toc:
+      permalink: true

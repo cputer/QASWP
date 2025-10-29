@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: If you use QASWP in academic work, please cite it as below.
+title: QASWP: Quantum-Authenticated Neural Semantic Weaving Protocol
+version: "2.2"
+date-released: 2025-10-29
+authors:
+  - family-names: "CPUTER"
+    given-names: "Inc."
+identifiers:
+  - type: url
+    value: https://github.com/YourOrg/QASWP
