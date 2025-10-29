@@ -1,7 +1,3 @@
-Author: Nikolai Nedovodin (CPUTER Inc.)
-Contact: info@cputer.com
-Date: October 2025
-
 # Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP)
 
 *Author: Nikolai Nedovodin (CPUTER Inc.), October 2025*

@@ -1,0 +1,25 @@
+name: Content Guard
+on: [pull_request]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compare against base for critical docs
+        run: |
+          set -e
+          for f in WHITEPAPER.md IETF-DRAFT.txt API_REFERENCE.md; do
+            echo "Checking $f for non-whitespace deletions..."
+            git show origin/${{ github.base_ref }}:$f | tr -d '[:space:]' > /tmp/base_$f.noWS || true
+            cat $f | tr -d '[:space:]' > /tmp/head_$f.noWS || true
+            if [ ! -s /tmp/base_$f.noWS ]; then
+              echo "::warning::$f not found on base (new file?) — skipping strict check"
+              continue
+            fi
+            if ! grep -Fq "$(cat /tmp/base_$f.noWS)" /tmp/head_$f.noWS; then
+              echo "::error::Non-whitespace deletions detected in $f"
+              exit 1
+            fi
+          done

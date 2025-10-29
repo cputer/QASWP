@@ -1,6 +1,3 @@
-Author: Nikolai Nedovodin (CPUTER Inc.)
-Contact: info@cputer.com
-
 # QASWP Python API Reference
 
 This document describes the Python API for the core components of the **Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP)**. It is intended for developers integrating QASWP into applications or working on its implementation. The API provides classes for managing a QASWP session and its sub-components: key exchange, compression, proof verification, and context management.

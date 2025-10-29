@@ -39,9 +39,11 @@ python examples/client.py
 
 ## 📖 Documentation
 
-- **WHITEPAPER.md**: A 20-page deep dive into the theory, mathematics, and architecture of QASWP.
-- **IETF-DRAFT.txt**: An RFC-style specification of the protocol, ready for submission to research groups.
-- **API Reference**: Core logic documented in `QASWPSession(is_client=True)`.
+- 📚 [Overview](/docs/overview.md)
+- 📚 [API Reference](/docs/api.md)
+- 📚 [WHITEPAPER.md](WHITEPAPER.md): A 20-page deep dive into the theory, mathematics, and architecture of QASWP.
+- 📚 [IETF-DRAFT.txt](IETF-DRAFT.txt): An RFC-style specification of the protocol, ready for submission to research groups.
+- 📚 [API_REFERENCE.md](API_REFERENCE.md): Core logic documented in `QASWPSession(is_client=True)`.
 
 ## 🛠 Core Features
 
