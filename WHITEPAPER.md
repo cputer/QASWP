@@ -285,18 +285,18 @@ The latency introduced by QASWP comes from two main sources: the **handshake** (
 
 - **Handshake latency:** Quantum key exchange can be nearly instantaneous if entangled qubits are pre-shared, or could take on the order of milliseconds to seconds if establishing from scratch (depending on distance – e.g., satellite QKD might have ~20ms one-way). The classical handshake is comparable to a TLS handshake with extra data; in our prototype, it completed in about 2 round-trip times. For a local or same-region connection with <10 ms RTT, the handshake finished in under 50 ms. If zk-SNARK proofs are involved and not precomputed, Alice’s proof generation might take on the order of 1-2 seconds (for a reasonably complex model circuit) – however, this can be done ahead of time or in parallel with quantum exchange, and the protocol could be configured to either wait for it or proceed and verify later. In a typical usage, the handshake might add ~1 second delay if proofs are computed live. We anticipate this cost will drop as proof systems and hardware improve, and for many use cases a slight setup delay is acceptable given the session can then stream data for minutes or hours.
 
-- **Per-message latency:** Encoding and decoding with a neural model introduces processing delay. On modern hardware (e.g., an edge device with a CPU or small GPU), encoding a short text might take a few milliseconds if the model is small (like a 6-layer transformer) or tens of ms if larger. Decoding similarly. If the application requires very low latency (sub-ms), the model must be optimized/tiny. QASWP’s design allows trading off model complexity and compression efficiency as needed. For instance, a tiny model might compress less but run faster. The encryption/decryption steps are usually negligible in comparison (AES can encrypt megabytes per second easily on hardware acceleration). Verification of proofs is quick (ms), but if we did decide to attach a proof to a message, generating that proof could be very slow (seconds). Therefore, we generally don’t attach proofs to latency-sensitive messages. 
+- **Per-message latency:** Encoding and decoding with a neural model introduces processing delay. On modern hardware (e.g., an edge device with a CPU or small GPU), encoding a short text might take a few milliseconds if the model is small (like a 6-layer transformer) or tens of ms if larger. Decoding similarly. If the application requires very low latency (sub-ms), the model must be optimized/tiny. QASWP’s design allows trading off model complexity and compression efficiency as needed. For instance, a tiny model might compress less but run faster. The encryption/decryption steps are usually negligible in comparison (AES can encrypt megabytes per second easily on hardware acceleration). Verification of proofs is quick (ms), but if we did decide to attach a proof to a message, generating that proof could be very slow (seconds). Therefore, we generally don’t attach proofs to latency-sensitive messages.
 
 Overall, for interactive communications like voice or video augmented with semantics, QASWP can be tuned to meet real-time requirements by limiting model complexity. For data syncing applications where a second of delay is fine, heavier models and on-the-fly proofs could be used for maximum efficiency and trust.
 
-- **Computation cost on battery devices:** Running neural models and quantum optics hardware might raise concerns for IoT or mobile devices. However, models for semantic compression can be designed efficiently (e.g., distilled or quantized neural networks). There is active research on lightweight semantic encoders for devices. Quantum hardware for QKD is indeed non-trivial and power-consuming, so QASWP might rely on network-assisted quantum services for smaller devices (like an IoT device connecting to a nearby QASWP gateway that does the quantum handshake on its behalf). 
+- **Computation cost on battery devices:** Running neural models and quantum optics hardware might raise concerns for IoT or mobile devices. However, models for semantic compression can be designed efficiently (e.g., distilled or quantized neural networks). There is active research on lightweight semantic encoders for devices. Quantum hardware for QKD is indeed non-trivial and power-consuming, so QASWP might rely on network-assisted quantum services for smaller devices (like an IoT device connecting to a nearby QASWP gateway that does the quantum handshake on its behalf).
 
 ### 7.3 Security Overhead and Trade-offs
 
 Security in QASWP is enhanced by multiple layers, but each layer can have a cost:
 - Quantum: requires specialized hardware and has distance/throughput limitations (current QKD systems can generate keys at kbps to Mbps rates depending on conditions). For most use cases, the key generation rate is sufficient, but it may not scale to extremely high frequency key refresh beyond certain limits. We mitigate this by not needing to refresh keys too often – one key can encrypt many messages, and semantic compression actually means fewer bits to encrypt overall.
 - Post-quantum cryptography: PQ algorithms sometimes have larger key sizes or slower operations than classical ones. For instance, Dilithium signatures are a few kilobytes long (compared to 256-byte ECDSA). In handshake this is fine, but it does inflate message size for certificate exchange. KEMs like Kyber have similarly larger keys but still very fast operations (microseconds). These are mostly one-time costs in handshake, so the impact is minor.
-- zk-SNARK: The memory and CPU burden for generating proofs can be high. In our trial, generating a proof of a small neural network (~100k parameters) took around 5 seconds on a laptop CPU. This is heavy, and our approach is to avoid doing that routinely. If device constraints are tight, one might disable the SNARK feature or use it sparingly. We anticipate that as this technology matures, specialized hardware (like GPUs, FPGAs, or even ASICs) could accelerate proof generation dramatically, making real-time proofs more viable. 
+- zk-SNARK: The memory and CPU burden for generating proofs can be high. In our trial, generating a proof of a small neural network (~100k parameters) took around 5 seconds on a laptop CPU. This is heavy, and our approach is to avoid doing that routinely. If device constraints are tight, one might disable the SNARK feature or use it sparingly. We anticipate that as this technology matures, specialized hardware (like GPUs, FPGAs, or even ASICs) could accelerate proof generation dramatically, making real-time proofs more viable.
 - Protocol complexity: With many moving parts, there is a higher chance of implementation bugs. We stress the importance of thorough testing and possibly formal verification of the protocol’s critical components (especially cryptographic state machines) to ensure security isn’t compromised by a flaw.
 
 Despite these overheads, QASWP’s security enhancements are significant. It essentially provides **defense in multiple dimensions**: even if the encryption was somehow broken, the semantic encoding by itself is an obfuscation (someone seeing the ciphertext wouldn’t even know what the plain meaning is without the model and context). If the semantic model had a backdoor or leak, the encryption and SNARK ensure an attacker cannot inject data without detection or trick the protocol without solving tough problems. The combination of quantum and post-quantum methods ensures long-term confidentiality—an eavesdropper recording QASWP traffic today cannot hope to decrypt it even with a future quantum computer (the one-time pad nature of quantum key combined with PQ crypto foils the “record now, decrypt later” threat[15]).
@@ -337,7 +337,7 @@ We have presented QASWP, a protocol that marries quantum cryptographic security 
 - **Integrated Verification Layer:** zk-SNARK proofs that instill confidence in the protocol’s actions and the AI’s outputs without sacrificing privacy or efficiency in normal operation.
 - **Robustness and Flexibility:** A design that can fall back to classical methods if needed, and that can be tuned for various performance needs (from low-latency to high-throughput scenarios).
 
-**Future Work:** QASWP opens numerous avenues for research and development. One important next step is a full-scale implementation and real-world testing. This would involve deploying QASWP on prototype quantum network hardware combined with classical networks, and using real AI models. Measuring performance in diverse conditions (noisy channels, different languages or data types for semantic content, etc.) will help refine the model and compression strategies. 
+**Future Work:** QASWP opens numerous avenues for research and development. One important next step is a full-scale implementation and real-world testing. This would involve deploying QASWP on prototype quantum network hardware combined with classical networks, and using real AI models. Measuring performance in diverse conditions (noisy channels, different languages or data types for semantic content, etc.) will help refine the model and compression strategies.
 
 Another area is **automated model adaptation**: currently, we assume a fixed shared model, but could the model evolve during the conversation to better fit the data (online learning)? If so, how to do that securely is a question (maybe exchanging model updates via the secure channel, or even using SNARKs to verify model updates don’t break things).
 
@@ -363,37 +363,37 @@ In conclusion, QASWP demonstrates a pathway towards communications that are **ef
 
 6. Choe, J., Jouini, O., et al. (2024). *Semantic Communication and Completion (SCC) frameworks – challenges in real-world deployment.* (Referenced in Ogenyi et al. 2025 review.) [10]
 
-7. **NIST PQC Project.** (2024). *Post-Quantum Cryptography Standardization Project – Round 4 Candidates.*  
+7. **NIST PQC Project.** (2024). *Post-Quantum Cryptography Standardization Project – Round 4 Candidates.*
    [https://csrc.nist.gov/projects/post-quantum-cryptography](https://csrc.nist.gov/projects/post-quantum-cryptography)
 
-8. **IETF Quantum Internet Research Group (QIRG).** (2024). *RFC 9583 – Use Cases for a Quantum Internet.*  
+8. **IETF Quantum Internet Research Group (QIRG).** (2024). *RFC 9583 – Use Cases for a Quantum Internet.*
    [https://datatracker.ietf.org/doc/rfc9583/](https://datatracker.ietf.org/doc/rfc9583/)
 
-9. **Bennett, C. H., & Brassard, G.** (1984). *Quantum Cryptography: Public Key Distribution and Coin Tossing.*  
+9. **Bennett, C. H., & Brassard, G.** (1984). *Quantum Cryptography: Public Key Distribution and Coin Tossing.*
    *Proceedings of IEEE International Conference on Computers, Systems and Signal Processing (Bangalore, India), 175–179.*
 
-10. **Ekert, A. K.** (1991). *Quantum Cryptography Based on Bell’s Theorem.*  
+10. **Ekert, A. K.** (1991). *Quantum Cryptography Based on Bell’s Theorem.*
     *Physical Review Letters, 67*(6), 661–663. [DOI:10.1103/PhysRevLett.67.661]
 
-11. **Shor, P. W.** (1994). *Algorithms for Quantum Computation: Discrete Logarithms and Factoring.*  
+11. **Shor, P. W.** (1994). *Algorithms for Quantum Computation: Discrete Logarithms and Factoring.*
     *Proceedings of the 35th Annual Symposium on Foundations of Computer Science (FOCS ’94), 124–134.*
 
-12. **Boneh, D., & Franklin, M.** (2001). *Identity-Based Encryption from the Weil Pairing.*  
+12. **Boneh, D., & Franklin, M.** (2001). *Identity-Based Encryption from the Weil Pairing.*
     *Advances in Cryptology – CRYPTO 2001, LNCS 2139, Springer.*
 
-13. **Goodfellow, I., Bengio, Y., & Courville, A.** (2016). *Deep Learning.* MIT Press.  
+13. **Goodfellow, I., Bengio, Y., & Courville, A.** (2016). *Deep Learning.* MIT Press.
     [https://www.deeplearningbook.org/](https://www.deeplearningbook.org/)
 
 14. **Goldreich, O.** (2001). *Foundations of Cryptography: Volume 1 – Basic Tools.* Cambridge University Press.
 
-15. **Ben-Sasson, E., et al.** (2014). *SNARKs for C: Verifying Program Executions Succinctly and in Zero Knowledge.*  
+15. **Ben-Sasson, E., et al.** (2014). *SNARKs for C: Verifying Program Executions Succinctly and in Zero Knowledge.*
     *Proceedings of CRYPTO 2014.*
 
-16. **Zhang, C., Li, J., et al.** (2023). *Semantic Communication Networks: A Machine Learning Perspective.*  
+16. **Zhang, C., Li, J., et al.** (2023). *Semantic Communication Networks: A Machine Learning Perspective.*
     *IEEE Communications Surveys & Tutorials, 25*(1), 445–472.
 
-17. **Zhou, X., Chen, S., & Zhu, W.** (2023). *Edge Intelligence for Semantic Communication in 6G.*  
+17. **Zhou, X., Chen, S., & Zhu, W.** (2023). *Edge Intelligence for Semantic Communication in 6G.*
     *IEEE Internet of Things Journal, 10*(2), 1805–1816.
 
-18. **Nedovodin, N.** (2025). *Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP): Design, Security, and Implementation.*  
+18. **Nedovodin, N.** (2025). *Quantum-Authenticated Neural Semantic Weaving Protocol (QASWP): Design, Security, and Implementation.*
     *CPUTER Research Technical Report, Version 2.0.*
