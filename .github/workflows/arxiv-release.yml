@@ -1,0 +1,36 @@
+name: arXiv Build & Release
+
+on:
+  push:
+    tags:
+      - "v2.*-demo-proof"
+
+permissions:
+  contents: write  # needed to create releases + upload assets
+
+jobs:
+  build-arxiv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup LaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: qaswp_arxiv.tex
+          working_directory: arxiv
+          latexmk_use_lualatex: true
+
+      - name: Output PDF path
+        id: out
+        run: |
+          echo "pdf=arxiv/qaswp_arxiv.pdf" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release and upload PDF
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.out.outputs.pdf }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
