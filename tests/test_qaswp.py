@@ -1,4 +1,15 @@
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
 import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from src.qaswp import QASWPSession
 from src.qkd import bb84_keygen
 
@@ -33,5 +44,4 @@ def test_qkd_eavesdropper_detection():
     print("✅ Eavesdropper detection test passed.")
 
 if __name__ == "__main__":
-    test_full_handshake_success()
-    test_qkd_eavesdropper_detection()
+    raise SystemExit(pytest.main([__file__]))
