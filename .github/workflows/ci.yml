@@ -1,14 +1,14 @@
-name: Proofs
+name: CI
 
 on:
   push:
-    branches: [ "main", "master", "feat/demo-claims-pass", "chore/ci-fixes" ]
+    branches: [ "main", "master", "chore/ci-fixes", "feat/demo-claims-pass" ]
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
-  proofs:
+  build-test-lint:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}
@@ -26,10 +26,12 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -r dev-requirements.txt
 
-      - name: Show env
+      - name: Pre-commit (lint/format)
         run: |
-          python --version
-          python -c "import sys,os; print('PYTHONPATH=', os.getenv('PYTHONPATH')); print('sys.path[0]=', sys.path[0])"
+          pre-commit install
+          pre-commit run --all-files --show-diff-on-failure
 
-      - name: Run proof tests
-        run: pytest -q proofs/
+      - name: Pytest (repo + proofs)
+        run: |
+          pytest -q
+          pytest -q proofs/
