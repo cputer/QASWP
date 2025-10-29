@@ -8,8 +8,10 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
+from .config import is_qiskit_enabled
 from .neural import VOCAB, TinyLLM
 from .qkd import bb84_keygen
+from .qaswp_qiskit import perform_qkd_session
 from .zk_sim import generate_zk_proof
 
 __all__ = ["QASWPSession", "VOCAB"]
@@ -117,8 +119,25 @@ class QASWPSession:
         self._update_transcript(transcript_piece)
 
         try:
-            # The quantum master key is derived from the QKD session
-            qkd_master_key = bb84_keygen()
+            qkd_master_key = None
+            qiskit_info = None
+
+            # Optional Qiskit-backed key (feature flag must be ON and import available)
+            if is_qiskit_enabled():
+                status, out = perform_qkd_session()
+                if status == "ok" and isinstance(out, (bytes, bytearray)) and len(out) == 32:
+                    qkd_master_key = bytes(out)
+                    qiskit_info = {"qiskit_key": qkd_master_key}
+                else:
+                    qiskit_info = {"qiskit_skipped": True, "reason": str(out)}
+
+            # Fallback to BB84 if Qiskit is not enabled or failed
+            if qkd_master_key is None:
+                qkd_master_key = bb84_keygen()
+                qiskit_info = qiskit_info or {
+                    "qiskit_skipped": True,
+                    "reason": "flag disabled or unavailable",
+                }
 
             # The session key is derived from both QKD and ephemeral keys (hybrid model)
             # This is a simplified KDF step.
@@ -130,20 +149,32 @@ class QASWPSession:
             # In real QKD, both sides would obtain the same K_q from a single session.
             # Also derive a deterministic "entangle id" from the session key (stub).
             self._entangle_id = hashlib.sha256(b"entangle|" + self.session_key).hexdigest()[:16]
-            return {
+            resp = {
                 "status": "ok",
                 "zk_proof": zk_proof,
                 "entanglement_id": self._entangle_id,
                 "qkd_master_key": qkd_master_key,  # DEMO ONLY
             }
+            if qiskit_info:
+                resp.update(qiskit_info)
+            return resp
         except ValueError as e:
             return {"status": "error", "message": str(e)}
 
     def client_pass_3(self, server_response):
         """Client verifies server and completes handshake."""
         # Client would verify zk_proof here (omitted in demo)
-        # DEMO: use server-provided qkd_master_key to ensure same session key
-        qkd_master_key = server_response["qkd_master_key"]
+        # Prefer server-provided qiskit_key if present (flag path), else fallback to BB84/qkd_master_key
+        if (
+            is_qiskit_enabled()
+            and isinstance(server_response, dict)
+            and isinstance(server_response.get("qiskit_key"), (bytes, bytearray))
+        ):
+            qkd_master_key = bytes(server_response["qiskit_key"])
+        elif isinstance(server_response, dict) and "qkd_master_key" in server_response:
+            qkd_master_key = server_response["qkd_master_key"]
+        else:
+            qkd_master_key = bb84_keygen()
         kdf = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=self.transcript)
         self.session_key = kdf.derive(qkd_master_key)
 

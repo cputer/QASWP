@@ -27,3 +27,6 @@ jobs:
       - name: Run Qiskit smoke test (skips if not available)
         run: |
           pytest -q tests/test_qiskit_stub.py || true
+      - name: Run Qiskit integration test (skips if not available)
+        run: |
+          pytest -q tests/test_qiskit_integration_optional.py || true
