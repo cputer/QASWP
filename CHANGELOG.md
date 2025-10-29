@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.1.0 — 2025-10-29
+- FIX: receiver no longer errors on placeholder packets (safe no-op)
+- FEAT: public `QASWPSession.flush()` to emit trailing confirmations
+- TEST: all demo compression tests use flush(); Benchmarks confirm ≥ 99%
+- CI: added Benchmarks and Fuzz workflows; offline-tolerant robustness suite
+
 ## [2.2] - 2025-10-29
 ### Added
 - Proprietary royalty-bearing license and NOTICE (CPUTER Inc.).
