@@ -55,6 +55,19 @@ python examples/client.py
 [Stats] Compression Ratio: 99.8% 🚀
 ```
 
+### Packet semantics & flushing
+
+- **Placeholders:** Packets emitted while confirmations are still buffering have
+  `flushed=False`, `wire_len=0`, and empty `nonce`/`encrypted_payload`. Receivers
+  **must treat these as no-ops**.
+- **Stream boundaries:** Call `QASWPSession.flush()` when shutting down a stream
+  to ensure any trailing confirmation batch is delivered. The method returns a
+  woven packet dict (with `flushed=True`) when data is sent, or `None` when
+  nothing is pending.
+- **Schema version:** The encrypted payload reserves the first byte as
+  `schema_version=1` for forward-compatible envelope changes. Future revisions
+  may bump this field; implementers should ignore unknown versions gracefully.
+
 ## 📖 Documentation
 
 - 📚 [Overview](/docs/overview.md)
