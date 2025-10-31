@@ -149,6 +149,14 @@ When ( H(Δ|Ψ)\to0 ), apparent compression approaches 100 %, but total entropy 
 
 ---
 
+### Applicability & Limitations
+
+QASWP excels in structured, context-rich exchanges (telemetry, control-plane, federated updates) where TinyLLM predictions minimize payloads.<br>
+Unstructured or high-entropy streams gain little benefit, prompting fallback to classical compression or full-payload transfer.<br>
+Hybrid QKD+PQC encryption, authenticated sequencing, and model rotation mitigate replay, leakage, and disclosure risks.
+
+---
+
 ## 🧪 Testing Matrix
 
 * Local: `pytest`, `coverage`

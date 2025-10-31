@@ -284,6 +284,67 @@ When \( H(Δ \mid Ψ) \rightarrow 0 \), the apparent compression approaches 100 
 the protocol remains information-theoretically sound — no information is created or destroyed,
 and total entropy remains consistent with Shannon’s limit.
 
+## Practical Applicability, Limitations, and Threat Model
+
+The QASWP framework achieves its effective communication efficiency through semantic prediction, not universal compression.
+Its performance depends on the degree of structural regularity and contextual overlap between communicating peers.
+
+### 8.1 Applicability Scope
+
+QASWP is most effective in structured, repetitive, and context-rich communication environments, such as:
+
+- Telemetry and IoT data streams with repeating templates.
+- Control-plane messages and API requests where message sequences follow predictable patterns.
+- Federated learning synchronization and edge-to-cloud inference exchanges.
+- Quantum–AI agent interaction protocols that reuse known semantic templates.
+
+In these conditions, the shared predictive model (TinyLLM) successfully anticipates the next message, requiring only confirmation or delta transmission.
+For unstructured, high-entropy data streams (e.g., arbitrary file transfer), the protocol yields minimal or no gain — in such cases, traditional compression or streaming encryption is preferable.
+
+### 8.2 Semantic Model vs. Static Dictionary
+
+While the principle is comparable to using a shared dictionary or codebook between endpoints, QASWP’s neural-semantic model generalizes and adapts dynamically rather than relying on static indices.
+The model continuously refines itself from observed message patterns, allowing new combinations and partial corrections to be encoded efficiently without predefining the full corpus.
+
+### 8.3 Security Considerations
+
+Predictive or semantic transmission schemes are inherently vulnerable to statistical and replay attacks if not properly protected.
+QASWP addresses these risks through a multi-layer security design:
+
+1. **Quantum and Post-Quantum Encryption:**
+   All transmitted confirmations or deltas are protected using hybrid QKD + PQC key material and AEAD encryption (AES-GCM).
+   Even minimal payloads are encrypted, authenticated, and include nonces.
+2. **Integrity and Freshness:**
+   Every confirmation carries a message authentication code (MAC), sequence number, and timestamp to prevent replay or injection.
+3. **Metadata Privacy:**
+   The system employs padding, batching, and randomized packet intervals to obfuscate message-size patterns and reduce side-channel leakage.
+4. **Model Confidentiality:**
+   The predictive model state is treated as confidential shared context and can be periodically rotated or updated via federated differentials (LoRA-style deltas).
+   Zero-knowledge proofs (ZKML) verify model integrity without disclosing parameters.
+5. **Fallback Mode:**
+   In case of anomaly detection or model desynchronization, QASWP reverts to full-message transmission (no semantic compression) to maintain confidentiality and reliability.
+
+### 8.4 Threat Model Summary
+
+| Threat | Risk | Mitigation |
+|--------|------|-------------|
+| Replay / Injection | Moderate | Sequence numbers, nonces, MACs |
+| Statistical leakage | Low–Moderate | Padding, batching, randomized timing |
+| Model disclosure | Critical | Model encryption, periodic rotation |
+| Man-in-the-middle | Critical | Hybrid QKD + PQC handshake authentication |
+| Entropy edge cases | Low | Fallback to full-payload mode |
+
+### 8.5 Comparison to Classical Compression
+
+Traditional algorithms (gzip, bzip2) reduce redundancy within a local data stream and are limited by Shannon’s entropy bound.
+QASWP instead leverages *shared knowledge* between peers to reduce conditional entropy \( H(Δ\mid Ψ) \), not absolute entropy \( H(M) \).
+This remains fully compliant with Shannon’s theorem, as no new information is created or destroyed — efficiency arises from predictive context, not statistical coding.
+
+### 8.6 Summary
+
+QASWP should be viewed not as a universal compressor but as a *semantic efficiency layer* for intelligent networks, capable of transforming communication patterns where context and trust are already shared.
+Under secure and predictable conditions, its effective data reduction can approach 99 %, while preserving full cryptographic and information-theoretic soundness.
+
 ---
 
 ## Performance Analysis
